@@ -1,0 +1,73 @@
+export const theme = {
+  colors: {
+    logo: "linear-gradient(180deg, #F70 0%, #FFD400 100%);",
+    logo_deactivation:
+      "linear-gradient(180deg, rgba(255, 119, 0, 0.30) 0%, rgba(255, 212, 0, 0.30) 100%);",
+    main: "#FF8C00",
+    main_deactivation: "rgba(255, 140, 0, 0.3)",
+    sub1: "#FFBF01",
+    sub2: "rgba(255, 191, 1, 0.05)",
+    sub3: "#FFBA66",
+    sub4: "rgba(255, 140, 0, 0.06)",
+    gray1: "#555555",
+    gray2: "#797979",
+    gray3: "#B7B7B7",
+    gray4: "#D8D8D8",
+    gray5: "#F0F0F0",
+    gray6: "#F5F5F5",
+    white: "#FFFFFF",
+    negative: "#FF6262",
+  },
+  effects: {
+    effect1: "0 0 18.45px 0 rgba(0, 0, 0, 0.25)",
+    effect2: "0 4px 4px 0 rgba(0, 0, 0, 0.07)",
+    effect3: "0 -4px 4px 0 rgba(0, 0, 0, 0.07)",
+  },
+  texts: {
+    h1: { fontSize: "1.25rem", lineHeight: "1.5em", fontWeight: "Bold" },
+    h2: { fontSize: "1.25rem", lineHeight: "1.2em", fontWeight: "Medium" },
+    h3: { fontSize: "1rem", lineHeight: "1.5em", fontWeight: "SemiBold" },
+    h4: { fontSize: "1rem", lineHeight: "1.5em", fontWeight: "Medium" },
+    body1: { fontSize: "0.9375rem", lineHeight: "1.5em", fontWeight: "Medium" },
+    body2: { fontSize: "0.875rem", lineHeight: "1.5em", fontWeight: "Bold" },
+    body3: { fontSize: "0.875rem", lineHeight: "1.5em", fontWeight: "Medium" },
+    body4: {
+      fontSize: "0.875rem",
+      lineHeight: "1.72em",
+      fontWeight: "Regular",
+    },
+    body5: { fontSize: "0.75rem", lineHeight: "1.5em", fontWeight: "Bold" },
+    body6: {
+      fontSize: "0.75rem",
+      lineHeight: "1.67em",
+      fontWeight: "SemiBold",
+    },
+    body7: { fontSize: "0.75rem", lineHeight: "1.5em", fontWeight: "Medium" },
+    body8: {
+      fontSize: "0.875rem",
+      lineHeight: "1.72em",
+      fontWeight: "Regular",
+    },
+    subtitle1: {
+      fontSize: "0.9375rem",
+      lineHeight: "1.5em",
+      fontWeight: "Bold",
+    },
+    subtitle2: {
+      fontSize: "0.9375rem",
+      lineHeight: "1.5em",
+      fontWeight: "Regular",
+    },
+    subtitle3: {
+      fontSize: "0.75rem",
+      lineHeight: "1.5em",
+      fontWeight: "Light",
+    },
+    navigation: {
+      fontSize: "0.625rem",
+      lineHeight: "auto",
+      fontWeight: "SemiBold",
+    },
+    date: { fontSize: "0.625rem", lineHeight: "auto", fontWeight: "Light" },
+  },
+} as const;
