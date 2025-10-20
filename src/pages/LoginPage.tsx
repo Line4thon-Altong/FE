@@ -44,7 +44,7 @@ export function LoginPage() {
           <Input placeholder="아이디" type="text" />
           <Input placeholder="비밀번호" type="password" />
         </InputContainer>
-        <Button text="로그인" onClick={handleLogin} />
+        <Button text="로그인" onClick={handleLogin} textType="login" />
         <SignupLink>회원가입</SignupLink>
       </Content>
     </Container>
