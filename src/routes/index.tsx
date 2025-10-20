@@ -6,6 +6,7 @@ import { LandingPage } from "../pages/LandingPage";
 import { LoginPage } from "../pages/LoginPage";
 import { SignupPage } from "../pages/SignupPage";
 import { TermsOfServicePage } from "../pages/TermsOfServicePage";
+import { SignupDetailsPage } from "@/pages/SignupDetailsPage";
 
 export const router = createBrowserRouter([
   {
@@ -17,7 +18,7 @@ export const router = createBrowserRouter([
     element: <BasicLayout />,
     children: [
       {
-        path: "/",
+        index: true,
         element: <LandingPage />,
       },
       {
@@ -41,9 +42,14 @@ export const router = createBrowserRouter([
         },
       },
       {
-        path: "terms",
+        path: ":role/terms",
         element: <TermsOfServicePage />,
         handle: { title: "이용약관 동의" },
+      },
+      {
+        path: ":role/details",
+        element: <SignupDetailsPage />,
+        handle: { title: "회원정보 입력" },
       },
     ],
   },
