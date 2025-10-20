@@ -1,8 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
-import MainLayout from "../layouts/MainLayout";
+import BasicLayout from "../layouts/BasicLayout";
+import SignupLayout from "../layouts/SignupLayout";
 import { Test } from "../pages/Test";
 import { LandingPage } from "../pages/LandingPage";
 import { LoginPage } from "../pages/LoginPage";
+import { SignupPage } from "../pages/SignupPage";
+import { TermsOfServicePage } from "../pages/TermsOfServicePage";
 
 export const router = createBrowserRouter([
   {
@@ -11,7 +14,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <MainLayout />,
+    element: <BasicLayout />,
     children: [
       {
         path: "/",
@@ -20,6 +23,27 @@ export const router = createBrowserRouter([
       {
         path: "/login",
         element: <LoginPage />,
+      },
+    ],
+  },
+  {
+    path: "/signup",
+    element: <SignupLayout />,
+    handle: {
+      title: "회원 구분",
+    },
+    children: [
+      {
+        index: true,
+        element: <SignupPage />,
+        handle: {
+          title: "회원 구분",
+        },
+      },
+      {
+        path: "terms",
+        element: <TermsOfServicePage />,
+        handle: { title: "이용약관 동의" },
       },
     ],
   },

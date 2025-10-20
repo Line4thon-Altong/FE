@@ -10,7 +10,7 @@ interface ButtonProps {
 
 export function Button({
   text,
-  textType = "login",
+  textType = "others",
   disabled = false,
   onClick,
 }: ButtonProps) {
