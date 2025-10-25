@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
-import { Button } from "@/components/button";
+import { LargeButton } from "@/components/large-button";
 import StoreIcon from "@/assets/icons/ic_store";
 import PersonIcon from "@/assets/icons/ic_person";
 import { useState } from "react";
@@ -27,7 +27,7 @@ export function SignupPage() {
           <SelectButtonText>사장님</SelectButtonText>
         </SelectButton>
       </SelectContainer>
-      <Button text="다음으로" onClick={() => {}} />
+      <LargeButton text="다음으로" textType="others" onClick={() => {}} />
     </Container>
   );
 }

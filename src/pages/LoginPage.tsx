@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import LogoText from "@/assets/logos/logo_text";
 import { Input } from "@/components/input";
-import { Button } from "@/components/button";
+import { LargeButton } from "@/components/large-button";
 import { useState } from "react";
 import { Alert } from "@/components/alert";
 
@@ -44,7 +44,7 @@ export function LoginPage() {
           <Input placeholder="아이디" type="text" />
           <Input placeholder="비밀번호" type="password" />
         </InputContainer>
-        <Button text="로그인" onClick={handleLogin} textType="login" />
+        <LargeButton text="로그인" onClick={handleLogin} textType="login" />
         <SignupLink>회원가입</SignupLink>
       </Content>
     </Container>

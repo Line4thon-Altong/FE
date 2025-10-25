@@ -13,11 +13,13 @@ export default function SignupLayout() {
     <Viewport>
       <AppArea>
         <Header title="회원가입" headerType="signup" />
-        <TitleContainer>
-          <LogoText width={117} height={90} />
-          <Title>{title}</Title>
-        </TitleContainer>
-        <Outlet />
+        <AreaContainer>
+          <TitleContainer>
+            <LogoText width={117} height={90} />
+            <Title>{title}</Title>
+          </TitleContainer>
+          <Outlet />
+        </AreaContainer>
       </AppArea>
     </Viewport>
   );
@@ -39,6 +41,15 @@ const AppArea = styled.main`
   min-height: 100vh;
   max-width: 430px;
   background: ${theme.colors.white};
+`;
+
+const AreaContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  max-width: 430px;
+  padding-top: 90px;
 `;
 
 const TitleContainer = styled.div`

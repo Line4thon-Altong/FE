@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Input } from "@/components/input";
-import { Button } from "@/components/button";
+import { LargeButton } from "@/components/large-button";
 import { useMemo, useState } from "react";
 import { Alert } from "@/components/alert";
 import { useParams } from "react-router-dom";
@@ -107,7 +107,7 @@ export function SignupDetailsPage() {
           errorText={passwordCheckError}
         />
       </FormWrapper>
-      <Button
+      <LargeButton
         text="가입하기"
         onClick={handleSignup}
         disabled={isSignupDisabled}

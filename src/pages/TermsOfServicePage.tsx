@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
-import { Button } from "@/components/button";
+import { LargeButton } from "@/components/large-button";
 import CheckIcon from "@/assets/icons/ic_check";
 import CheckFillIcon from "@/assets/icons/ic_check-fill";
 import NextIcon from "@/assets/icons/ic_next";
@@ -151,7 +151,7 @@ export function TermsOfServicePage() {
         </AgreeContainer>
       </AgreeWrapper>
 
-      <Button
+      <LargeButton
         text="다음으로"
         onClick={() => {}}
         disabled={isNextButtonDisabled}
