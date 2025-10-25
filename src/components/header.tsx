@@ -51,7 +51,11 @@ const HeaderWrapper = styled.div<{ $signup?: boolean }>`
   background-color: ${theme.colors.white};
   height: 90px;
   width: 100%;
+  max-width: 430px;
   box-shadow: ${({ $signup }) => ($signup ? "none" : theme.effects.effect2)};
+  position: fixed;
+  top: 0;
+  z-index: 1000;
 `;
 
 const SignupWrapper = styled.div`
