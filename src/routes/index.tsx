@@ -1,12 +1,17 @@
 import { createBrowserRouter } from "react-router-dom";
-import BasicLayout from "../layouts/BasicLayout";
-import SignupLayout from "../layouts/SignupLayout";
-import { Test } from "../pages/Test";
-import { LandingPage } from "../pages/LandingPage";
-import { LoginPage } from "../pages/LoginPage";
-import { SignupPage } from "../pages/SignupPage";
-import { TermsOfServicePage } from "../pages/TermsOfServicePage";
+import BasicLayout from "@/layouts/BasicLayout";
+import SignupLayout from "@/layouts/SignupLayout";
+import HomeLayout from "@/layouts/HomeLayout";
+import EmployeeManagementLayout from "@/layouts/EmployeeManagementLayout";
+import { Test } from "@/pages/Test";
+import { LandingPage } from "@/pages/LandingPage";
+import { LoginPage } from "@/pages/LoginPage";
+import { SignupPage } from "@/pages/SignupPage";
+import { TermsOfServicePage } from "@/pages/TermsOfServicePage";
 import { SignupDetailsPage } from "@/pages/SignupDetailsPage";
+import { HomePage } from "@/pages/HomePage";
+import { EmployeeManagementPage } from "@/pages/EmployeeManagementPage";
+import { EmployeeAddPage } from "@/pages/EmployeeAddPage";
 
 export const router = createBrowserRouter([
   {
@@ -22,7 +27,7 @@ export const router = createBrowserRouter([
         element: <LandingPage />,
       },
       {
-        path: "/login",
+        path: "login",
         element: <LoginPage />,
       },
     ],
@@ -50,6 +55,36 @@ export const router = createBrowserRouter([
         path: ":role/details",
         element: <SignupDetailsPage />,
         handle: { title: "회원정보 입력" },
+      },
+    ],
+  },
+  {
+    path: "/home",
+    element: <HomeLayout />,
+    handle: {
+      title: "가게 이름",
+    },
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+        handle: {
+          title: "멋쟁이알통",
+        },
+      },
+    ],
+  },
+  {
+    path: "/employee-management",
+    element: <EmployeeManagementLayout />,
+    children: [
+      {
+        index: true,
+        element: <EmployeeManagementPage />,
+      },
+      {
+        path: "add",
+        element: <EmployeeAddPage />,
       },
     ],
   },

@@ -1,19 +1,19 @@
 import styled, { css } from "styled-components";
 import { theme } from "@/styles/theme";
 
-interface ButtonProps {
+interface LargeButtonProps {
   text: string;
   textType?: "login" | "others";
   disabled?: boolean;
   onClick?: () => void;
 }
 
-export function Button({
+export function LargeButton({
   text,
   textType = "others",
   disabled = false,
   onClick,
-}: ButtonProps) {
+}: LargeButtonProps) {
   return (
     <ButtonWrapper $textType={textType} disabled={disabled} onClick={onClick}>
       {text}
