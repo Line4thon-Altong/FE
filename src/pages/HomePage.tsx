@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { SmallButton } from "@/components/small-button";
 import PersonFillIcon from "@/assets/icons/ic_person-fill";
 import { EducationItem } from "@/components/home/education-item";
-import PlusIcon from "@/assets/icons/ic_plus";
+import PlusIcon from "@/assets/icons/ic_plus-fill";
 import { useNavigate } from "react-router-dom";
 const educationItems = [
   {
