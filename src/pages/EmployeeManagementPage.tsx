@@ -1,6 +1,5 @@
 import { SearchBar } from "@/components/employee-management/search-bar";
 import styled from "styled-components";
-import { theme } from "@/styles/theme";
 import { SmallButton } from "@/components/small-button";
 import { EmployeeItem } from "@/components/employee-management/employee-item";
 import { Alert } from "@/components/alert";
@@ -133,11 +132,4 @@ const EmployeeListContainer = styled.div`
   align-items: center;
   height: 100%;
   margin-top: 34px;
-`;
-
-const EmployeeListNoDataText = styled.div`
-  font-size: ${theme.texts.subtitle2.fontSize};
-  font-weight: ${theme.texts.subtitle2.fontWeight};
-  line-height: ${theme.texts.subtitle2.lineHeight};
-  color: ${theme.colors.gray3};
 `;
