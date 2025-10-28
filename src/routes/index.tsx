@@ -10,7 +10,8 @@ import { LoginPage } from "@/pages/LoginPage";
 import { SignupPage } from "@/pages/SignupPage";
 import { TermsOfServicePage } from "@/pages/TermsOfServicePage";
 import { SignupDetailsPage } from "@/pages/SignupDetailsPage";
-import { HomePage } from "@/pages/HomePage";
+import { HomePageOwner } from "@/pages/HomePageOwner";
+import { HomePageEmployee } from "@/pages/HomePageEmployee";
 import { EmployeeManagementPage } from "@/pages/EmployeeManagementPage";
 import { EmployeeAddPage } from "@/pages/EmployeeAddPage";
 import { EducationManagementPage } from "@/pages/EducationManagementPage";
@@ -67,11 +68,20 @@ export const router = createBrowserRouter([
       title: "가게 이름",
     },
     children: [
+      // --- 사장님용 홈 ---
       {
-        index: true,
-        element: <HomePage />,
+        path: "owner",
+        element: <HomePageOwner />,
         handle: {
           title: "멋쟁이알통",
+        },
+      },
+      // --- 직원용 홈 ---
+      {
+        path: "employee",
+        element: <HomePageEmployee />,
+        handle: {
+          title: "이다연",
         },
       },
     ],
