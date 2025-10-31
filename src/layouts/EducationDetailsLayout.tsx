@@ -1,18 +1,28 @@
 import { Outlet } from "react-router-dom";
 import styled from "styled-components";
+import { useState } from "react";
 import { Header } from "@/components/header";
 import { useMatches } from "react-router-dom";
 
-export default function EducationLayout() {
+export default function EducationDetailsLayout() {
   const matches = useMatches();
   const title = (matches.at(-1)?.handle as { title: string })?.title;
+
+  const [activeTab, setActiveTab] = useState<"manual" | "quiz">("manual");
 
   return (
     <Viewport>
       <AppArea>
-        <Header title={title} headerType="chat" />
+        <Header
+          title={title}
+          headerType="details"
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
         <AreaContainer>
-          <Outlet />
+          {/* 아래에서 Outlet 대신 직접 조건부 렌더링 (또는 manual/quiz Container import해서 사용) */}
+          {activeTab === "manual" && <Outlet context={{ activeTab }} />}
+          {activeTab === "quiz" && <Outlet context={{ activeTab }} />}
         </AreaContainer>
       </AppArea>
     </Viewport>
@@ -43,6 +53,6 @@ const AreaContainer = styled.div`
   flex: 1;
   width: 100%;
   max-width: 430px;
-  padding-top: 90px;
+  padding-top: 140px;
   padding-bottom: 91px;
 `;

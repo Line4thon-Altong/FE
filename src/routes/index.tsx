@@ -4,6 +4,7 @@ import SignupLayout from "@/layouts/SignupLayout";
 import HomeLayout from "@/layouts/HomeLayout";
 import EmployeeManagementLayout from "@/layouts/EmployeeManagementLayout";
 import EducationLayout from "@/layouts/EducationLayout";
+import EducationDetailsLayout from "@/layouts/EducationDetailsLayout";
 import { Test } from "@/pages/Test";
 import { LandingPage } from "@/pages/LandingPage";
 import { LoginPage } from "@/pages/LoginPage";
@@ -15,7 +16,7 @@ import { HomePageEmployee } from "@/pages/HomePageEmployee";
 import { EmployeeManagementPage } from "@/pages/EmployeeManagementPage";
 import { EmployeeAddPage } from "@/pages/EmployeeAddPage";
 import { EducationManagementPage } from "@/pages/EducationManagementPage";
-
+import { EducationDetailsPage } from "@/pages/EducationDetailsPage";
 export const router = createBrowserRouter([
   {
     path: "/test",
@@ -112,6 +113,22 @@ export const router = createBrowserRouter([
         element: <EducationManagementPage />,
         handle: {
           title: "교육생성",
+        },
+      },
+    ],
+  },
+  {
+    path: "/education-details",
+    element: <EducationDetailsLayout />,
+    handle: {
+      title: "교육 상세",
+    },
+    children: [
+      {
+        index: true,
+        element: <EducationDetailsPage />,
+        handle: {
+          title: "주문받고 결제하는 기본 교육",
         },
       },
     ],
