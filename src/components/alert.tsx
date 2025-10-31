@@ -30,7 +30,9 @@ export function Alert({
 const AlertWrapper = styled.div`
   position: absolute;
   z-index: 1000;
-  top: 409px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   background-color: ${theme.colors.white};
