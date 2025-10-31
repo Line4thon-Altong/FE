@@ -14,6 +14,8 @@ import { HomePage } from "@/pages/HomePage";
 import { EmployeeManagementPage } from "@/pages/EmployeeManagementPage";
 import { EmployeeAddPage } from "@/pages/EmployeeAddPage";
 import { EducationManagementPage } from "@/pages/EducationManagementPage";
+import ScheduleLayout from "@/layouts/ScheduleLayout";
+import { SchedulePage } from "@/pages/SchedulePage";
 
 export const router = createBrowserRouter([
   {
@@ -102,6 +104,22 @@ export const router = createBrowserRouter([
         element: <EducationManagementPage />,
         handle: {
           title: "교육생성",
+        },
+      },
+    ],
+  },
+  {
+    path: "/schedule",
+    element: <ScheduleLayout />,
+    handle: {
+      title: "이다연",
+    },
+    children: [
+      {
+        index: true,
+        element: <SchedulePage />,
+        handle: {
+          title: "이다연",
         },
       },
     ],
