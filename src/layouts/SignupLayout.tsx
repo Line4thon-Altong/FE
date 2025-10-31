@@ -5,19 +5,21 @@ import { theme } from "@/styles/theme";
 import LogoText from "@/assets/logos/logo_text";
 import { useMatches } from "react-router-dom";
 
-export default function SignupLayout() {
+export default function SignupLayout({ isLogo = true }: { isLogo?: boolean }) {
   const matches = useMatches();
   const title = (matches.at(-1)?.handle as { title: string })?.title;
 
   return (
     <Viewport>
       <AppArea>
-        <Header title="회원가입" headerType="signup" />
+        <Header title={title || "회원가입"} headerType="signup" />
         <AreaContainer>
-          <TitleContainer>
-            <LogoText width={117} height={90} />
-            <Title>{title}</Title>
-          </TitleContainer>
+          {isLogo && (
+            <TitleContainer>
+              <LogoText width={117} height={90} />
+              <Title>{title}</Title>
+            </TitleContainer>
+          )}
           <Outlet />
         </AreaContainer>
       </AppArea>
