@@ -17,6 +17,8 @@ import { EmployeeManagementPage } from "@/pages/EmployeeManagementPage";
 import { EmployeeAddPage } from "@/pages/EmployeeAddPage";
 import { EducationManagementPage } from "@/pages/EducationManagementPage";
 import { EducationDetailsPage } from "@/pages/EducationDetailsPage";
+import { MyPage } from "@/pages/MyPage";
+import { AccountPage } from "@/pages/AccountPage";
 export const router = createBrowserRouter([
   {
     path: "/test",
@@ -129,6 +131,35 @@ export const router = createBrowserRouter([
         element: <EducationDetailsPage />,
         handle: {
           title: "주문받고 결제하는 기본 교육",
+        },
+      },
+    ],
+  },
+  {
+    path: "/mypage",
+    element: <HomeLayout />,
+    children: [
+      {
+        index: true,
+        element: <MyPage />,
+        handle: {
+          title: "멋쟁이알통",
+        },
+      },
+    ],
+  },
+  {
+    path: "/mypage/account",
+    element: <SignupLayout isLogo={false} />,
+    handle: {
+      title: "계정",
+    },
+    children: [
+      {
+        index: true,
+        element: <AccountPage />,
+        handle: {
+          title: "계정",
         },
       },
     ],
