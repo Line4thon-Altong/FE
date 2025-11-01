@@ -1,5 +1,11 @@
 import { theme } from "../styles/theme";
 import styled from "styled-components";
+import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 
 import {
   startOfMonth,
@@ -7,14 +13,30 @@ import {
   eachDayOfInterval,
   format,
   getDay,
+  addMonths,
+  subMonths,
 } from "date-fns";
 
 export function SchedulePage() {
-  const currentMonth = new Date(2025, 9); // 2025년 10월
+  const [currentMonth, setCurrentMonth] = useState(new Date()); // ✅ 현재 달 동적
+  const todayStr = format(new Date(), "yyyy-MM-dd");
+
+  // 달 이동 함수
+  const handlePrevMonth = () => setCurrentMonth((prev) => subMonths(prev, 1));
+  const handleNextMonth = () => setCurrentMonth((prev) => addMonths(prev, 1));
+
+  // 현재 달의 날짜 리스트 생성
   const days = eachDayOfInterval({
     start: startOfMonth(currentMonth),
     end: endOfMonth(currentMonth),
   });
+  const firstDayOfWeek = getDay(startOfMonth(currentMonth));
+  const emptyCells = Array.from({ length: firstDayOfWeek }, (_, i) => (
+    <div key={`empty-${i}`} />
+  ));
+
+  const currentMonthLabel = format(currentMonth, "MMMM");
+  const currentYear = format(currentMonth, "yyyy");
 
   // 날짜별 근무자 데이터 (예시)
   const shifts = {
@@ -23,9 +45,9 @@ export function SchedulePage() {
       { name: "다연", color: "#c8e7ff" },
       { name: "수현", color: "#d3f8d3" },
     ],
-    "2025-10-14": [{ name: "유나", color: "#ffe6b3" }],
-    "2025-10-19": [{ name: "다연", color: "#c8e7ff" }],
-    "2025-10-25": [
+    "2025-11-14": [{ name: "유나", color: "#ffe6b3" }],
+    "2025-11-19": [{ name: "다연", color: "#c8e7ff" }],
+    "2025-11-25": [
       { name: "지훈", color: "#ffdee2" },
       { name: "태민", color: "#d0f0c0" },
       { name: "지훈", color: "#ffdee2" },
@@ -33,19 +55,22 @@ export function SchedulePage() {
     ],
   };
 
-  const todayStr = format(new Date(), "yyyy-MM-dd");
-
-  // 달력 정렬 (1일 시작 요일 기준으로 앞쪽 빈 칸 생성)
-  const firstDayOfWeek = getDay(startOfMonth(currentMonth));
-  const emptyCells = Array.from({ length: firstDayOfWeek }, (_, i) => (
-    <div key={`empty-${i}`} />
-  ));
   return (
     <Container>
       <CalendarWrapper>
         <Header>
-          <h2>October</h2>
-          <span>2025</span>
+          <div>
+            <h2>{currentMonthLabel}</h2>
+            <span>{currentYear}</span>
+          </div>
+          <div>
+            <ArrowButton onClick={handlePrevMonth}>
+              <FontAwesomeIcon icon={faChevronLeft} />
+            </ArrowButton>
+            <ArrowButton onClick={handleNextMonth}>
+              <FontAwesomeIcon icon={faChevronRight} />
+            </ArrowButton>
+          </div>
         </Header>
 
         <DaysRow>
@@ -109,6 +134,10 @@ const Header = styled.div`
   margin-bottom: 16px;
   color: rgba(37, 37, 37, 1);
   height: 67px;
+  div {
+    display: flex;
+    align-items: center;
+  }
   h2 {
     font-family: Lato;
     font-weight: 700;
@@ -117,6 +146,7 @@ const Header = styled.div`
     letter-spacing: 0%;
     text-align: center;
     vertical-align: middle;
+    margin-right: 12px;
   }
   span {
     font-family: Lato;
@@ -126,6 +156,19 @@ const Header = styled.div`
     letter-spacing: 0%;
     text-align: center;
     vertical-align: middle;
+  }
+`;
+
+const ArrowButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: ${theme.colors.gray2};
+  transition: color 0.2s;
+
+  &:hover {
+    color: #000;
   }
 `;
 

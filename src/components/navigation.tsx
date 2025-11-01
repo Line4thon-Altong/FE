@@ -4,7 +4,9 @@ import EducationIcon from "@/assets/icons/ic_education";
 import PersonIcon from "@/assets/icons/ic_person";
 import { theme } from "@/styles/theme";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 export function Navigation() {
+  const navigate = useNavigate();
   const [activeItem, setActiveItem] = useState<
     "schedule" | "education" | "myPage"
   >("education");
@@ -13,7 +15,11 @@ export function Navigation() {
   };
   return (
     <FooterWrapper>
-      <FooterItem onClick={() => handleClick("schedule")}>
+      <FooterItem
+        onClick={() => {
+          handleClick("schedule"), navigate("/schedule");
+        }}
+      >
         <ScheduleIcon
           width={39}
           height={39}
