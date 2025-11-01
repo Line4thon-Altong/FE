@@ -6,6 +6,7 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import { ScheduleModal } from "../components/scheduleModal";
 
 import {
   startOfMonth,
@@ -18,8 +19,32 @@ import {
 } from "date-fns";
 
 export function SchedulePage() {
+  // 날짜별 근무자 데이터 (예시)
+  const shifts = {
+    "2025-10-06": [{ name: "민지", color: "#ffd6d6", id: "qwewqe" }],
+    "2025-10-08": [
+      { name: "다연", color: "#c8e7ff", id: "qwewqe" },
+      { name: "수현", color: "#d3f8d3", id: "qwewqe" },
+    ],
+    "2025-11-14": [{ name: "유나", color: "#ffe6b3", id: "qwewqe" }],
+    "2025-11-19": [{ name: "다연", color: "#c8e7ff", id: "qwewqe" }],
+    "2025-11-25": [
+      { name: "지훈", color: "#ffdee2", id: "qwewqe" },
+      { name: "태민", color: "#d0f0c0", id: "qwewqe" },
+      { name: "지훈", color: "#ffdee2", id: "qwewqe" },
+      { name: "태민", color: "#d0f0c0", id: "qwewqe" },
+    ],
+  };
+
   const [currentMonth, setCurrentMonth] = useState(new Date()); // ✅ 현재 달 동적
+  const [selectedDate, setSelectedDate] = useState<string | null>(null); //클릭된 날짜 관리
   const todayStr = format(new Date(), "yyyy-MM-dd");
+
+  // 클릭 시 모달 열기
+  const handleDayClick = (dateStr: string) => {
+    if (shifts[dateStr]) setSelectedDate(dateStr);
+    console.log("click");
+  };
 
   // 달 이동 함수
   const handlePrevMonth = () => setCurrentMonth((prev) => subMonths(prev, 1));
@@ -38,25 +63,15 @@ export function SchedulePage() {
   const currentMonthLabel = format(currentMonth, "MMMM");
   const currentYear = format(currentMonth, "yyyy");
 
-  // 날짜별 근무자 데이터 (예시)
-  const shifts = {
-    "2025-10-06": [{ name: "민지", color: "#ffd6d6" }],
-    "2025-10-08": [
-      { name: "다연", color: "#c8e7ff" },
-      { name: "수현", color: "#d3f8d3" },
-    ],
-    "2025-11-14": [{ name: "유나", color: "#ffe6b3" }],
-    "2025-11-19": [{ name: "다연", color: "#c8e7ff" }],
-    "2025-11-25": [
-      { name: "지훈", color: "#ffdee2" },
-      { name: "태민", color: "#d0f0c0" },
-      { name: "지훈", color: "#ffdee2" },
-      { name: "태민", color: "#d0f0c0" },
-    ],
-  };
-
   return (
     <Container>
+      {selectedDate && (
+        <ScheduleModal
+          date={selectedDate}
+          workers={shifts[selectedDate]}
+          onClose={() => setSelectedDate(null)}
+        />
+      )}
       <CalendarWrapper>
         <Header>
           <div>
@@ -87,7 +102,7 @@ export function SchedulePage() {
             const isToday = dateStr === todayStr;
 
             return (
-              <DayCell key={dateStr}>
+              <DayCell key={dateStr} onClick={() => handleDayClick(dateStr)}>
                 <DateNumber isToday={isToday}>{format(day, "d")}</DateNumber>
                 <WorkerList>
                   {workers.map((w, i) => (
@@ -113,6 +128,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   gap: 18px;
+  position: relative;
 `;
 
 const CalendarWrapper = styled.div`
@@ -122,7 +138,7 @@ const CalendarWrapper = styled.div`
   padding: 24px;
   border-radius: 20px;
   width: 100%;
-  height: 578px;
+  min-height: 578px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
 `;
 
