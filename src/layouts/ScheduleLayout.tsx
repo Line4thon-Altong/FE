@@ -38,6 +38,7 @@ const AppArea = styled.main`
   min-height: 100vh;
   max-width: 430px;
   background: ${theme.colors.sub2};
+  position: relative;
 `;
 
 const AreaContainer = styled.div`
