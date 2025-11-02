@@ -1,27 +1,22 @@
 import { Outlet } from "react-router-dom";
 import styled from "styled-components";
 import { Header } from "@/components/header";
+import { Navigation } from "@/components/navigation";
 import { theme } from "@/styles/theme";
-import LogoText from "@/assets/logos/logo_text";
 import { useMatches } from "react-router-dom";
 
-export default function SignupLayout({ isLogo = true }: { isLogo?: boolean }) {
+export default function ScheduleLayout() {
   const matches = useMatches();
   const title = (matches.at(-1)?.handle as { title: string })?.title;
 
   return (
     <Viewport>
       <AppArea>
-        <Header title={title || "회원가입"} headerType="signup" />
+        <Header title={title} headerType="home" />
         <AreaContainer>
-          {isLogo && (
-            <TitleContainer>
-              <LogoText width={117} height={90} />
-              <Title>{title}</Title>
-            </TitleContainer>
-          )}
           <Outlet />
         </AreaContainer>
+        <Navigation />
       </AppArea>
     </Viewport>
   );
@@ -42,7 +37,8 @@ const AppArea = styled.main`
   width: 100%;
   min-height: 100vh;
   max-width: 430px;
-  background: ${theme.colors.white};
+  background: ${theme.colors.sub2};
+  position: relative;
 `;
 
 const AreaContainer = styled.div`
@@ -52,19 +48,5 @@ const AreaContainer = styled.div`
   width: 100%;
   max-width: 430px;
   padding-top: 90px;
-`;
-
-const TitleContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 93px;
-`;
-
-const Title = styled.div`
-  font-size: ${theme.texts.body3.fontSize};
-  font-weight: ${theme.texts.body3.fontWeight};
-  line-height: ${theme.texts.body3.lineHeight};
-  color: ${theme.colors.gray3};
+  padding-bottom: 103px;
 `;

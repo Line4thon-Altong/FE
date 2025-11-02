@@ -10,7 +10,7 @@ export default function EducationLayout() {
   return (
     <Viewport>
       <AppArea>
-        <Header title={title} headerType="details" />
+        <Header title={title} headerType="chat" />
         <AreaContainer>
           <Outlet />
         </AreaContainer>
