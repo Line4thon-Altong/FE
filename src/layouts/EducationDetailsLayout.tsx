@@ -1,26 +1,28 @@
 import { Outlet } from "react-router-dom";
 import styled from "styled-components";
+import { useState } from "react";
 import { Header } from "@/components/header";
-import { theme } from "@/styles/theme";
-import LogoText from "@/assets/logos/logo_text";
 import { useMatches } from "react-router-dom";
 
-export default function SignupLayout({ isLogo = true }: { isLogo?: boolean }) {
+export default function EducationDetailsLayout() {
   const matches = useMatches();
   const title = (matches.at(-1)?.handle as { title: string })?.title;
+
+  const [activeTab, setActiveTab] = useState<"manual" | "quiz">("manual");
 
   return (
     <Viewport>
       <AppArea>
-        <Header title={title || "회원가입"} headerType="signup" />
+        <Header
+          title={title}
+          headerType="details"
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
         <AreaContainer>
-          {isLogo && (
-            <TitleContainer>
-              <LogoText width={117} height={90} />
-              <Title>{title}</Title>
-            </TitleContainer>
-          )}
-          <Outlet />
+          {/* 아래에서 Outlet 대신 직접 조건부 렌더링 (또는 manual/quiz Container import해서 사용) */}
+          {activeTab === "manual" && <Outlet context={{ activeTab }} />}
+          {activeTab === "quiz" && <Outlet context={{ activeTab }} />}
         </AreaContainer>
       </AppArea>
     </Viewport>
@@ -42,7 +44,7 @@ const AppArea = styled.main`
   width: 100%;
   min-height: 100vh;
   max-width: 430px;
-  background: ${theme.colors.white};
+  background: #fff;
 `;
 
 const AreaContainer = styled.div`
@@ -51,20 +53,6 @@ const AreaContainer = styled.div`
   flex: 1;
   width: 100%;
   max-width: 430px;
-  padding-top: 90px;
-`;
-
-const TitleContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 93px;
-`;
-
-const Title = styled.div`
-  font-size: ${theme.texts.body3.fontSize};
-  font-weight: ${theme.texts.body3.fontWeight};
-  line-height: ${theme.texts.body3.lineHeight};
-  color: ${theme.colors.gray3};
+  padding-top: 140px;
+  padding-bottom: 91px;
 `;

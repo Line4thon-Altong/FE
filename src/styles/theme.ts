@@ -22,6 +22,7 @@ export const theme = {
     effect1: "0 0 18.45px 0 rgba(0, 0, 0, 0.25)",
     effect2: "0 4px 4px 0 rgba(0, 0, 0, 0.07)",
     effect3: "0 -4px 4px 0 rgba(0, 0, 0, 0.07)",
+    effect4: "0 0 4px 0 rgba(0, 0, 0, 0.25)",
   },
   texts: {
     h1: { fontSize: "1.25rem", lineHeight: "1.5em", fontWeight: 700 },
