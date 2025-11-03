@@ -8,7 +8,11 @@ import { useMatches } from "react-router-dom";
 export default function HomeLayout() {
   const matches = useMatches();
   const title = (matches.at(-1)?.handle as { title: string })?.title;
-
+  // 현재 pathname을 기준으로 activeItem 결정
+  const getActiveItem = () => {
+    if (location.pathname.includes("/mypage")) return "myPage";
+    return "education"; // 기본값: 홈(교육)
+  };
   return (
     <Viewport>
       <AppArea>
@@ -16,7 +20,7 @@ export default function HomeLayout() {
         <AreaContainer>
           <Outlet />
         </AreaContainer>
-        <Navigation />
+        <Navigation activeItem={getActiveItem()} />
       </AppArea>
     </Viewport>
   );

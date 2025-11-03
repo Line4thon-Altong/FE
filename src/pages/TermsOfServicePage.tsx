@@ -5,6 +5,7 @@ import CheckIcon from "@/assets/icons/ic_check";
 import CheckFillIcon from "@/assets/icons/ic_check-fill";
 import NextIcon from "@/assets/icons/ic_next";
 import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 export function TermsOfServicePage() {
   const [isAllAgree, setIsAllAgree] = useState(false);
@@ -13,7 +14,8 @@ export function TermsOfServicePage() {
   const [isThirdPartyAgree, setIsThirdPartyAgree] = useState(false);
   const [isEventAgree, setIsEventAgree] = useState(false);
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
-
+  const navigate = useNavigate();
+  const { role } = useParams(); // 현재 role = 'employee' 또는 'owner'
   useEffect(() => {
     if (
       isAllAgree ||
@@ -66,6 +68,10 @@ export function TermsOfServicePage() {
 
   const handleEventAgree = () => {
     setIsEventAgree(!isEventAgree);
+  };
+
+  const handleNext = () => {
+    navigate(`/signup/${role}/details`);
   };
 
   return (
@@ -153,7 +159,7 @@ export function TermsOfServicePage() {
 
       <LargeButton
         text="다음으로"
-        onClick={() => {}}
+        onClick={handleNext}
         disabled={isNextButtonDisabled}
       />
     </Container>

@@ -5,19 +5,28 @@ import PersonIcon from "@/assets/icons/ic_person";
 import { theme } from "@/styles/theme";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-export function Navigation() {
+interface NavigationProps {
+  activeItem: "schedule" | "education" | "myPage";
+}
+export function Navigation({ activeItem }: NavigationProps) {
   const navigate = useNavigate();
-  const [activeItem, setActiveItem] = useState<
-    "schedule" | "education" | "myPage"
-  >("education");
-  const handleClick = (item: "schedule" | "education" | "myPage") => {
-    setActiveItem(item);
+  // const [activeItem, setActiveItem] = useState<
+  //   "schedule" | "education" | "myPage"
+  // >("education");
+  // const handleClick = (item: "schedule" | "education" | "myPage") => {
+  //   setActiveItem(item);
+  // };
+
+  const goHome = () => {
+    const userType = localStorage.getItem("userType");
+    navigate(userType === "owner" ? "/home/owner" : "/home/employee");
   };
+
   return (
     <FooterWrapper>
       <FooterItem
         onClick={() => {
-          handleClick("schedule"), navigate("/schedule");
+          navigate("/schedule");
         }}
       >
         <ScheduleIcon
@@ -31,7 +40,11 @@ export function Navigation() {
           스케줄
         </FooterItemText>
       </FooterItem>
-      <FooterItem onClick={() => handleClick("education")}>
+      <FooterItem
+        onClick={() => {
+          goHome();
+        }}
+      >
         <EducationIcon
           width={39}
           height={39}
@@ -43,7 +56,11 @@ export function Navigation() {
           교육
         </FooterItemText>
       </FooterItem>
-      <FooterItem onClick={() => handleClick("myPage")}>
+      <FooterItem
+        onClick={() => {
+          navigate("/mypage");
+        }}
+      >
         <PersonIcon
           width={39}
           height={39}

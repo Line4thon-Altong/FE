@@ -4,11 +4,20 @@ import { LargeButton } from "@/components/large-button";
 import StoreIcon from "@/assets/icons/ic_store";
 import PersonIcon from "@/assets/icons/ic_person";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function SignupPage() {
   const [selectedRole, setSelectedRole] = useState<"employee" | "owner">(
     "employee"
   );
+  const navigate = useNavigate();
+  const handleNext = () => {
+    // 1localStorage에 선택한 역할 저장
+    localStorage.setItem("userType", selectedRole);
+
+    // 경로 이동
+    navigate(`/signup/${selectedRole}/terms`);
+  };
   return (
     <Container>
       <SelectContainer>
@@ -27,7 +36,7 @@ export function SignupPage() {
           <SelectButtonText>사장님</SelectButtonText>
         </SelectButton>
       </SelectContainer>
-      <LargeButton text="다음으로" textType="others" onClick={() => {}} />
+      <LargeButton text="다음으로" textType="others" onClick={handleNext} />
     </Container>
   );
 }

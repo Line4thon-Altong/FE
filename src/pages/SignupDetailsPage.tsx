@@ -3,6 +3,7 @@ import { Input } from "@/components/input";
 import { LargeButton } from "@/components/large-button";
 import { useEffect, useMemo, useState } from "react";
 import { Alert } from "@/components/alert";
+import { useNavigate } from "react-router-dom";
 
 export function SignupDetailsPage() {
   const [role, setRole] = useState<"owner" | "employee">("owner");
@@ -12,6 +13,7 @@ export function SignupDetailsPage() {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
+  const navigate = useNavigate();
 
   const idError = useMemo(() => {
     if (id.trim() === "") return "";
@@ -64,6 +66,20 @@ export function SignupDetailsPage() {
     setIsAlertOpen(true);
   };
 
+  const handleAlertClose = () => {
+    setIsAlertOpen(false); // 모달 닫기
+
+    //localStorage에서 userType 읽기
+    const userType = localStorage.getItem("userType");
+
+    //역할에 맞게 홈으로 이동
+    if (userType === "owner") {
+      navigate("/home/owner");
+    } else {
+      navigate("/home/employee");
+    }
+  };
+
   return (
     <Container>
       {isAlertOpen && (
@@ -71,7 +87,7 @@ export function SignupDetailsPage() {
           title="가입 완료"
           description="‘알통’ 회원가입이 완료되었습니다."
           alertType="alert"
-          onClose={() => setIsAlertOpen(false)}
+          onClose={handleAlertClose}
         />
       )}
       <FormWrapper>

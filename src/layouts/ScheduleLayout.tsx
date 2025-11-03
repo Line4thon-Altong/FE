@@ -16,7 +16,7 @@ export default function ScheduleLayout() {
         <AreaContainer>
           <Outlet />
         </AreaContainer>
-        <Navigation />
+        <Navigation activeItem={"schedule"} />
       </AppArea>
     </Viewport>
   );
