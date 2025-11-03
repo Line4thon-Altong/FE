@@ -1,3 +1,4 @@
+import React from "react";
 import styled, { css } from "styled-components";
 import { theme } from "@/styles/theme";
 
@@ -14,25 +15,41 @@ export function Alert({
   alertType = "delete",
   onClose,
 }: AlertProps) {
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget && onClose) {
+      onClose();
+    }
+  };
+
   return (
-    <AlertWrapper>
-      <AlertTitle>{title}</AlertTitle>
-      <AlertDescription>{description}</AlertDescription>
-      <AlertButtonContainer>
-        <CancelButton $alertType={alertType} onClick={onClose}>
-          취소
-        </CancelButton>
-        <ConfirmButton onClick={onClose}>확인</ConfirmButton>
-      </AlertButtonContainer>
-    </AlertWrapper>
+    <AlertBackdrop onClick={handleBackdropClick}>
+      <AlertWrapper onClick={(e) => e.stopPropagation()}>
+        <AlertTitle>{title}</AlertTitle>
+        <AlertDescription>{description}</AlertDescription>
+        <AlertButtonContainer>
+          <CancelButton $alertType={alertType} onClick={onClose}>
+            취소
+          </CancelButton>
+          <ConfirmButton onClick={onClose}>확인</ConfirmButton>
+        </AlertButtonContainer>
+      </AlertWrapper>
+    </AlertBackdrop>
   );
 }
-const AlertWrapper = styled.div`
-  position: absolute;
+const AlertBackdrop = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const AlertWrapper = styled.div`
   display: flex;
   flex-direction: column;
   background-color: ${theme.colors.white};
