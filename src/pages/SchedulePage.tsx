@@ -18,9 +18,15 @@ import {
   subMonths,
 } from "date-fns";
 
+type ShiftWorker = {
+  name: string;
+  color: string;
+  id: string;
+};
+
 export function SchedulePage() {
   // 날짜별 근무자 데이터 (예시)
-  const shifts = {
+  const shifts: Record<string, ShiftWorker[]> = {
     "2025-10-06": [{ name: "민지", color: "#ffd6d6", id: "qwewqe" }],
     "2025-10-08": [
       { name: "다연", color: "#c8e7ff", id: "qwewqe" },
@@ -103,9 +109,9 @@ export function SchedulePage() {
 
             return (
               <DayCell key={dateStr} onClick={() => handleDayClick(dateStr)}>
-                <DateNumber isToday={isToday}>{format(day, "d")}</DateNumber>
+                <DateNumber $isToday={isToday}>{format(day, "d")}</DateNumber>
                 <WorkerList>
-                  {workers.map((w, i) => (
+                  {workers.map((w: ShiftWorker, i: number) => (
                     <WorkerTag key={i} color={w.color}>
                       {w.name}
                     </WorkerTag>
@@ -217,11 +223,11 @@ const DayCell = styled.div`
   align-items: center;
 `;
 
-const DateNumber = styled.div`
+const DateNumber = styled.div<{ $isToday?: boolean }>`
   font-weight: 400;
   font-size: 11px;
-  color: ${(p) => (p.isToday ? "white" : "#333")};
-  background: ${(p) => (p.isToday ? "#111" : "transparent")};
+  color: ${(p) => (p.$isToday ? "white" : "#333")};
+  background: ${(p) => (p.$isToday ? "#111" : "transparent")};
   border-radius: 50%;
   width: 22px;
   height: 22px;
@@ -249,7 +255,7 @@ const WorkerList = styled.div`
 `;
 
 // 알바생 pill 태그
-const WorkerTag = styled.div`
+const WorkerTag = styled.div<{ color?: string }>`
   background: ${(p) => p.color || "#e8e8e8"};
   color: rgba(0, 0, 0, 1);
   border-radius: 2px;

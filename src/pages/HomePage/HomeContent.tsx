@@ -62,10 +62,10 @@ export function HomeContent({
             <SmallButton text="관리하기" onClick={onEmployeeManageClick} />
           ) : (
             <CheckButtons>
-              <CheckButton active={isCheckedIn} onClick={onCheckIn}>
+              <CheckButton $active={isCheckedIn} onClick={onCheckIn}>
                 출근하기
               </CheckButton>
-              <CheckButton active={!isCheckedIn} onClick={onCheckOut}>
+              <CheckButton $active={!isCheckedIn} onClick={onCheckOut}>
                 퇴근하기
               </CheckButton>
             </CheckButtons>
@@ -208,9 +208,9 @@ const CheckButtons = styled.div`
 `;
 
 //직원 출퇴근 버튼
-const CheckButton = styled.button`
+const CheckButton = styled.button<{ $active?: boolean }>`
   background-color: ${(p) =>
-    p.active ? theme.colors.main : theme.colors.gray3};
+    p.$active ? theme.colors.main : theme.colors.gray3};
   color: rgba(255, 255, 255, 1);
   transition: background-color 0.2s ease;
   padding: 6px 18px;
