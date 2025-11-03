@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components";
 import { theme } from "@/styles/theme";
 import StoreIcon from "@/assets/icons/ic_store";
+import PersonIcon from "@/assets/icons/ic_person";
 import BackIcon from "@/assets/icons/ic_back";
 import SeeMoreIcon from "@/assets/icons/ic_seemore";
 import EditIcon from "@/assets/icons/ic_edit";
@@ -38,6 +39,16 @@ export function Header({
   const handleSeeMore = () => {
     setIsSeeMoreOpen(!isSeeMoreOpen);
   };
+  const [userType, setUserType] = useState<"owner" | "employee">("owner");
+
+  useEffect(() => {
+    const userType = localStorage.getItem("userType");
+    if (userType === "owner") {
+      setUserType("owner");
+    } else {
+      setUserType("employee");
+    }
+  }, []);
 
   useEffect(() => {
     if (!isSeeMoreOpen) return;
@@ -71,7 +82,15 @@ export function Header({
           <HomeWrapper>
             <StoreContainer>
               <StoreIconContainer>
-                <StoreIcon width={16} height={16} color={theme.colors.main} />
+                {userType === "owner" ? (
+                  <StoreIcon width={22} height={22} color={theme.colors.main} />
+                ) : (
+                  <PersonIcon
+                    width={22}
+                    height={22}
+                    color={theme.colors.main}
+                  />
+                )}
               </StoreIconContainer>
               <Title>{title}</Title>
             </StoreContainer>
@@ -183,7 +202,7 @@ const HomeWrapper = styled.div`
 
 const StoreContainer = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 6px;
 `;
 
@@ -192,7 +211,7 @@ const StoreIconContainer = styled.div`
 `;
 
 const Title = styled.div<{ $signup?: boolean }>`
-  font-size: ${theme.texts.h3.fontSize};
+  font-size: 20px;
   font-weight: ${theme.texts.h3.fontWeight};
   line-height: ${theme.texts.h3.lineHeight};
   color: ${theme.colors.gray2};
