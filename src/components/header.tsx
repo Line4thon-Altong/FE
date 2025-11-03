@@ -42,7 +42,7 @@ export function Header({
   const [userType, setUserType] = useState<"owner" | "employee">("owner");
 
   useEffect(() => {
-    const userType = localStorage.getItem("userType");
+    const userType = localStorage.getItem("usertype");
     if (userType === "owner") {
       setUserType("owner");
     } else {
