@@ -1,13 +1,11 @@
 import styled from "styled-components";
 import { Input } from "@/components/input";
 import { LargeButton } from "@/components/large-button";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Alert } from "@/components/alert";
-import { useParams } from "react-router-dom";
 
 export function SignupDetailsPage() {
-  const params = useParams();
-  const role = params.role;
+  const [role, setRole] = useState<"owner" | "employee">("owner");
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [name, setName] = useState("");
   const [storeName, setStoreName] = useState("");
@@ -34,13 +32,16 @@ export function SignupDetailsPage() {
 
   const isSignupDisabled = useMemo(() => {
     const isAnyEmpty =
-      storeName.trim() === "" ||
+      (role === "owner" && storeName.trim() === "") ||
+      (role === "employee" && name.trim() === "") ||
       id.trim() === "" ||
       password.trim() === "" ||
       passwordCheck.trim() === "";
     const hasError = Boolean(idError || passwordError || passwordCheckError);
     return isAnyEmpty || hasError;
   }, [
+    role,
+    name,
     storeName,
     id,
     password,
@@ -49,6 +50,15 @@ export function SignupDetailsPage() {
     passwordError,
     passwordCheckError,
   ]);
+
+  useEffect(() => {
+    const userType = localStorage.getItem("usertype");
+    if (userType === "owner") {
+      setRole("owner");
+    } else {
+      setRole("employee");
+    }
+  }, []);
 
   const handleSignup = () => {
     setIsAlertOpen(true);
