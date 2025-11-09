@@ -15,7 +15,7 @@ export function SignupDetailsPage() {
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
 
-  // 새로 추가된 state (모달 관련)pen, set
+  // 새로 추가된 state (모달 관련)
   const [alertTitle, setAlertTitle] = useState(""); // 모달 제목
   const [alertDescription, setAlertDescription] = useState(""); // 모달 설명
   const [isError, setIsError] = useState(false); // 오류 여부 (성공/실패 구분용)
