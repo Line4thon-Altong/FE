@@ -18,8 +18,8 @@ export function Navigation({ activeItem }: NavigationProps) {
   // };
 
   const goHome = () => {
-    const userType = localStorage.getItem("userType");
-    navigate(userType === "owner" ? "/home/owner" : "/home/employee");
+    const usertype = localStorage.getItem("usertype");
+    navigate(usertype === "owner" ? "/home/owner" : "/home/employee");
   };
 
   return (

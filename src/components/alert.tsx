@@ -7,6 +7,7 @@ interface AlertProps {
   description: string;
   alertType?: "delete" | "alert";
   onClose?: () => void;
+  onConfirm?: () => void; //  추가
 }
 
 export function Alert({
@@ -14,6 +15,7 @@ export function Alert({
   description,
   alertType = "delete",
   onClose,
+  onConfirm,
 }: AlertProps) {
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget && onClose) {
@@ -30,7 +32,14 @@ export function Alert({
           <CancelButton $alertType={alertType} onClick={onClose}>
             취소
           </CancelButton>
-          <ConfirmButton onClick={onClose}>확인</ConfirmButton>
+          <ConfirmButton
+            onClick={() => {
+              if (onConfirm) onConfirm();
+              else onClose();
+            }}
+          >
+            확인
+          </ConfirmButton>
         </AlertButtonContainer>
       </AlertWrapper>
     </AlertBackdrop>

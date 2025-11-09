@@ -9,12 +9,62 @@ import { useState } from "react";
 export function MyPage() {
   const navigate = useNavigate();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const handleAccountClick = () => {
     navigate("/mypage/account");
   };
 
   const handleLogoutClick = () => {
     setIsAlertOpen(true);
+  };
+
+  // 로그아웃 실행 함수
+  const handleConfirmLogout = async () => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+
+    try {
+      const userType = localStorage.getItem("userType");
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (!refreshToken) {
+        console.error("No refresh token found.");
+        return;
+      }
+
+      // API endpoint 사장/직원 분기
+      const endpoint =
+        userType === "owner"
+          ? "https://altong.store/api/owners/logout"
+          : "https://altong.store/api/employees/logout";
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (response.ok) {
+        //  로컬스토리지 비우기
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("userType");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userName");
+
+        navigate("/login");
+      } else {
+        console.error("Logout failed:", await response.text());
+      }
+    } catch (err) {
+      console.error("Logout error:", err);
+    } finally {
+      setIsProcessing(false);
+      setIsAlertOpen(false);
+    }
   };
 
   return (
@@ -25,6 +75,7 @@ export function MyPage() {
           description="로그아웃하시겠습니까?"
           alertType="delete"
           onClose={() => setIsAlertOpen(false)}
+          onConfirm={handleConfirmLogout}
         />
       )}
       <Container>

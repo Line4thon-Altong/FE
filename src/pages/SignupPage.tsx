@@ -13,7 +13,7 @@ export function SignupPage() {
   const navigate = useNavigate();
   const handleNext = () => {
     // 1localStorage에 선택한 역할 저장
-    localStorage.setItem("userType", selectedRole);
+    localStorage.setItem("usertype", selectedRole);
 
     // 경로 이동
     navigate(`/signup/${selectedRole}/terms`);
