@@ -5,16 +5,36 @@ import PlusIcon from "@/assets/icons/ic_plus";
 
 interface InputMessageProps {
   activate: boolean;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSend: () => void;
 }
-export function InputMessage({ activate }: InputMessageProps) {
+export function InputMessage({
+  activate,
+  value,
+  onChange,
+  onSend,
+}: InputMessageProps) {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      onSend();
+    }
+  };
   return (
     <InputMessageWrapper>
       <InputMessageContainer $activate={activate}>
-        <InputMessageButton>
+        <InputMessageButton type="button">
           <PlusIcon width={11} height={11} />
         </InputMessageButton>
-        <InputMessageInput type="text" placeholder="메시지를 입력해주세요." />
-        <InputMessageButton>
+        <InputMessageInput
+          type="text"
+          placeholder="메시지를 입력해주세요."
+          value={value}
+          onChange={onChange}
+          onKeyDown={handleKeyPress}
+        />
+        <InputMessageButton onClick={onSend}>
           <SendIcon
             width={21}
             height={22}
