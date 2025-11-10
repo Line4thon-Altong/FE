@@ -28,7 +28,7 @@ export function EmployeeAddPage() {
   const handleAddEmployee = async () => {
     try {
       const payload = {
-        message: employeeId,
+        employeeUsername: employeeId,
       };
 
       console.log("알바생 추가 요청:", payload);
@@ -64,6 +64,7 @@ export function EmployeeAddPage() {
         setAlertDescription("알바생을 추가했습니다.");
         setOnAlertConfirm(() => () => setIsAlertOpen(false));
         setIsAlertOpen(true);
+        navigate("/employee-management");
       } else {
         // 비정상 응답
         setAlertTitle("추가 실패");

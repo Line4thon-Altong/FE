@@ -8,61 +8,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const employeeList_test = [
-  {
-    name: "홍길동",
-    id: "altong0000",
-  },
-  {
-    name: "홍길동",
-    id: "altong0000",
-  },
-  {
-    name: "홍길동",
-    id: "altong0000",
-  },
-  {
-    name: "홍길동",
-    id: "altong0000",
-  },
-  {
-    name: "홍길동",
-    id: "altong0000",
-  },
-  {
-    name: "홍길동",
-    id: "altong0000",
-  },
-  {
-    name: "홍길동",
-    id: "altong0000",
-  },
-  {
-    name: "홍길동",
-    id: "altong0000",
-  },
-  {
-    name: "홍길동",
-    id: "altong0000",
-  },
-  {
-    name: "홍길동",
-    id: "altong0000",
-  },
-  {
-    name: "홍길동",
-    id: "altong0000",
-  },
-  {
-    name: "홍길동",
-    id: "altong0000",
-  },
-];
-
 export function EmployeeManagementPage() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const navigate = useNavigate();
   const [employeeList, setEmployeeList] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState<any>(null); // 삭제할 알바생 저장
   const [error, setError] = useState<string | null>(null); //  에러 상태 추가
 
   useEffect(() => {
@@ -72,9 +22,10 @@ export function EmployeeManagementPage() {
         setError(null);
 
         const token = localStorage.getItem("accessToken"); // 필요 시 토큰 포함
-        const response = await axios.get("/api/employees", {
+        const response = await axios.get("https://altong.store/api/employees", {
           headers: {
             Authorization: token ? `Bearer ${token}` : "",
+            "Cache-Control": "no-cache, no-store, must-revalidate",
           },
         });
 
@@ -98,10 +49,46 @@ export function EmployeeManagementPage() {
     setIsAlertOpen(false);
   };
 
-  const handleDeleteEmployee = () => {
+  //삭제버튼 클릭 -> 모달 오픈
+  const handleDeleteEmployee = (employee: any) => {
+    setSelectedEmployee(employee);
     setIsAlertOpen(true);
   };
 
+  // 확인 클릭 → 삭제 API 호출
+  const handleConfirmDelete = async () => {
+    if (!selectedEmployee) return;
+
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.delete(
+        `https://altong.store/api/employees/${selectedEmployee.id}`,
+        {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        }
+      );
+
+      if (response.status === 200 || response.status === 204) {
+        // 삭제 성공 시 목록 업데이트
+        setEmployeeList((prev) =>
+          prev.filter((emp: any) => emp.id !== selectedEmployee.id)
+        );
+        console.log(`알바생 ${selectedEmployee.name} 삭제 성공`);
+      } else {
+        console.error("삭제 실패:", response);
+        setError("알바생 삭제에 실패했습니다.");
+      }
+    } catch (err) {
+      console.error("알바생 삭제 요청 실패:", err);
+      setError("알바생 삭제 요청 중 오류가 발생했습니다.");
+    } finally {
+      setIsAlertOpen(false);
+      setSelectedEmployee(null);
+    }
+  };
+  //추가 버튼 클릭-> 등록 페이지 이동
   const handleAddEmployee = () => {
     navigate("/employee-management/add");
   };
@@ -111,9 +98,10 @@ export function EmployeeManagementPage() {
       {isAlertOpen && (
         <Alert
           title="알바생 삭제"
-          description={`'${employeeList_test[0].name}' 알바생을 삭제하시겠습니까?`}
+          description={`'${selectedEmployee.name}' 알바생을 삭제하시겠습니까?`}
           alertType="delete"
           onClose={handleAlertClose}
+          onConfirm={handleConfirmDelete}
         />
       )}
       <Content>
@@ -145,7 +133,7 @@ export function EmployeeManagementPage() {
                 key={employee.id}
                 name={employee.name}
                 id={employee.username}
-                onDelete={handleDeleteEmployee}
+                onDelete={() => handleDeleteEmployee(employee)}
               />
             ))
           )}
@@ -182,13 +170,16 @@ const EmployeeListContainer = styled.div`
   flex-direction: column;
   gap: 18px;
   align-items: center;
-  justify-content: center;
   height: 100%;
   margin-top: 34px;
 `;
 
 const EmployeeListNoDataText = styled.div`
   text-align: center;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: ${theme.texts.subtitle3.fontSize};
   color: ${theme.colors.gray3};
 `;
