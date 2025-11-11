@@ -45,9 +45,28 @@ export function EducationManagementPage() {
     tone: "",
   });
 
-  const handleActivateInput = () => {
-    setActivateInput(true);
+  // 새로운 대화 시작 (리셋)
+  const resetChatFlow = () => {
+    setChatList([
+      {
+        text: `안녕하세요 사장님 💪😊.
+    사장님의 말투를 그대로 담은 교육 자료를 만들어볼게요.
+    하나씩 여쭤볼테니, 질문에 답해주세요.`,
+        isUser: false,
+      },
+      { text: questions[0], isUser: false },
+    ]);
+    setAnswers({
+      businessType: "",
+      title: "",
+      goal: [],
+      procedure: [],
+      precaution: [],
+      tone: "",
+    });
+    setStep(0);
     setActivateButton(false);
+    setActivateInput(true);
   };
 
   // 대화가 추가될 때마다 자동 스크롤
@@ -126,7 +145,6 @@ export function EducationManagementPage() {
                 Authorization: token ? `Bearer ${token}` : "",
                 "Content-Type": "application/json",
               },
-              timeout: 60000,
             }
           );
 
@@ -141,6 +159,10 @@ export function EducationManagementPage() {
             ]);
           }, 1500);
           console.log("전송 완료:", res.data);
+
+          setActivateButton(true); // ‘교육 생성하기’ 버튼 다시 표시
+          setActivateInput(false); // 입력창 비활성화
+          setStep(0); // step 초기화
         } catch (err) {
           console.error("전송 실패:", err);
           setChatList((prev) => [
@@ -174,7 +196,7 @@ export function EducationManagementPage() {
 
       {activateButton && (
         <ButtonContainer>
-          <SmallButton text="교육 생성하기" onClick={handleActivateInput} />
+          <SmallButton text="교육 생성하기" onClick={resetChatFlow} />
         </ButtonContainer>
       )}
 
