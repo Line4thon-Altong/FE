@@ -53,5 +53,6 @@ const TextWrapper = styled.div<{ $isUser: boolean; $showIcon: boolean }>`
     css`
       margin-left: 0;
       margin-top: 27px;
+      max-width: 85%;
     `}
 `;

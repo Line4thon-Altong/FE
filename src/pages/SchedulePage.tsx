@@ -7,6 +7,7 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { ScheduleModal } from "../components/scheduleModal";
+import { SmallButton } from "@/components/small-button";
 
 import {
   startOfMonth,
@@ -17,6 +18,7 @@ import {
   addMonths,
   subMonths,
 } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 type ShiftWorker = {
   name: string;
@@ -69,6 +71,7 @@ export function SchedulePage() {
   const currentMonthLabel = format(currentMonth, "MMMM");
   const currentYear = format(currentMonth, "yyyy");
 
+  const navigate = useNavigate();
   return (
     <Container>
       {selectedDate && (
@@ -78,6 +81,14 @@ export function SchedulePage() {
           onClose={() => setSelectedDate(null)}
         />
       )}
+      <ButtonWrapper>
+        <SmallButton
+          text="일정 추가하기"
+          onClick={() =>
+            navigate("/employee-management", { state: { isSchedule: true } })
+          }
+        />
+      </ButtonWrapper>
       <CalendarWrapper>
         <Header>
           <div>
@@ -135,6 +146,12 @@ const Container = styled.div`
   justify-content: center;
   gap: 18px;
   position: relative;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
 `;
 
 const CalendarWrapper = styled.div`
