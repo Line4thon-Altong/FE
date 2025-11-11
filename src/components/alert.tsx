@@ -35,7 +35,7 @@ export function Alert({
           <ConfirmButton
             onClick={() => {
               if (onConfirm) onConfirm();
-              else onClose();
+              else if (onClose) onClose();
             }}
           >
             확인

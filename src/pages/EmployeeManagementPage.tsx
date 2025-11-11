@@ -5,15 +5,18 @@ import { EmployeeItem } from "@/components/employee-management/employee-item";
 import { Alert } from "@/components/alert";
 import { theme } from "@/styles/theme";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 export function EmployeeManagementPage() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const [employeeList, setEmployeeList] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState<any>(null); // 삭제할 알바생 저장
   const [error, setError] = useState<string | null>(null); //  에러 상태 추가
+  const isSchedule =
+    (location.state as { isSchedule?: boolean })?.isSchedule ?? false;
 
   useEffect(() => {
     console.log("알바생 조회 요청");
@@ -134,6 +137,7 @@ export function EmployeeManagementPage() {
                 name={employee.name}
                 id={employee.username}
                 onDelete={() => handleDeleteEmployee(employee)}
+                isSchedule={isSchedule}
               />
             ))
           )}
