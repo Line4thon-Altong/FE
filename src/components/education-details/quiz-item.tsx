@@ -14,6 +14,7 @@ export function QuizItem({
   isCorrect,
   userType,
   quizId,
+  selectedAnswer,
   onSubmitAnswer,
 }: {
   index: number;
@@ -26,17 +27,16 @@ export function QuizItem({
   isCorrect: boolean | null;
   userType?: string | null;
   quizId: number;
+  selectedAnswer?: string | null;
   onSubmitAnswer?: (quizId: number, selectedAnswer: string) => void;
 }) {
   const handleClick = (option: { label: string; content: string }) => {
     if (userType === "employee" && !isCompleted && onSubmitAnswer) {
       const selected =
         type === "OX" ? option.label : `${option.label}) ${option.content}`;
-      setClicked(selected);
       onSubmitAnswer(quizId, selected);
     }
   };
-  const [clicked, setClicked] = useState<string | null>(null);
 
   // 배경색 직접 제어
   const getBgColor = (option: { label: string; content: string }) => {
@@ -44,9 +44,9 @@ export function QuizItem({
       type === "OX" ? option.label : `${option.label}) ${option.content}`;
 
     // 내가 클릭한 보기 → 오렌지색 유지
-    if (clicked === optionText) return theme.colors.main;
+    if (selectedAnswer === optionText) return theme.colors.main;
 
-    // 오답일 경우 → 정답 보기만 빨간색
+    // 정답 강조 (오답일 경우만)
     if (isCompleted && isCorrect === false && optionText === answer)
       return theme.colors.negative;
 

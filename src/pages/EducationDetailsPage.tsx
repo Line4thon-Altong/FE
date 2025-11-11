@@ -68,6 +68,9 @@ function QuizContainer() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const userType = localStorage.getItem("usertype");
+  const [selectedAnswers, setSelectedAnswers] = useState<
+    Record<number, string>
+  >({});
   const navigate = useNavigate();
 
   const fetchQuizData = async () => {
@@ -125,6 +128,7 @@ function QuizContainer() {
   // 알바생 답안 제출 함수
   const handleSubmitAnswer = async (quizId: number, selectedAnswer: string) => {
     try {
+      setSelectedAnswers((prev) => ({ ...prev, [quizId]: selectedAnswer })); // 클릭한 답 저장
       const token = localStorage.getItem("accessToken");
       if (!token) return;
 
@@ -172,6 +176,7 @@ function QuizContainer() {
           userType={userType}
           onSubmitAnswer={handleSubmitAnswer}
           quizId={item.id}
+          selectedAnswer={selectedAnswers[item.id] || null}
         />
       ))}
     </QuizLayout>
