@@ -3,39 +3,9 @@ import { theme } from "@/styles/theme";
 import image from "@/assets/temp/education-details.png";
 import { useOutletContext, useParams } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { QuizItem } from "@/components/education-details/quiz-item";
 import { useEffect, useState } from "react";
-
-const goal = "손님을 웃게 만드는 주문, 실수 없는 결제";
-
-const manualList = [
-  {
-    subTitle: "1. 인사는 활짝!",
-    content: `"안녕하세요~ 오늘 날이 참 좋죠?" 손님이 들어오면 먼저 웃으면서 인사해요. 첫인상은 진짜 중요하거든요. 기분 좋은 시작이 장사 반이에요~`,
-  },
-  {
-    subTitle: "2. 주문 받을 땐 꼼꼼하게",
-    content: `"HOT이요? ICE요? 사이즈는 라지로 괜찮으세요?" "샷 추가하실 건가요? 시럽은 바닐라/헤이즐넛 중 어떤 걸로 할까요?" 손님이 말 다 하기 전에 끼어들면 안 돼요! 그냥 미소 지으면서 다 듣고, 그다음 확인~ 😄`,
-  },
-  {
-    subTitle: "3. 포장/매장 체크",
-    content: `"포장이세요? 드시고 가세요?" 포장이면 포장 스티커 잘 붙었는지 한 번 확인! 이거 안 붙으면 손님 헷갈리거든요~`,
-  },
-  {
-    subTitle: "4. 결제 전 최종 확인!",
-    content: `"아메리카노 아이스 라지 1잔, 포장 맞으시죠?" 항상 한 번 더 확인! 실수 줄이는 건 결국 꼼꼼함이에요~`,
-  },
-  {
-    subTitle: "5. 결제 안내 & 마무리 멘트",
-    content: `"결제 도와드릴게요~ 카드로 하실까요, 간편결제로 하실까요?" "영수증은 필요하실까요?" 마지막엔 꼭 한 번 더 미소 지어줘요. "잠시만 기다려 주세요~ 금방 만들어드릴게요 ☕"`,
-  },
-];
-
-const attentionPoints = [
-  "손님 말 끊지 않기",
-  "주문 반복 확인은 생략 금지",
-  "밝은 목소리 유지 (힘든 날도 웃자~^^ 오늘은 날이 좋구만~ 🌤️)",
-];
 
 // 매뉴얼
 function ManualContainer({
@@ -81,62 +51,138 @@ function ManualContainer({
   );
 }
 
-const quizList = [
-  {
-    title: "결제 전에 주문 내역을 확인하면 좋다!",
-    type: "OX",
-    answer: "O",
-    description: "요건 습관처럼 해야 돼요~ 실수는 예방이 최고!",
-  },
-  {
-    title: "포장 주문 시 꼭 확인해야 할 것은?",
-    type: "MULTIPLE",
-    options: [
-      {
-        label: "A",
-        content: "결제 방식 확인",
-      },
-      {
-        label: "B",
-        content: "포장 스티커",
-      },
-    ],
-    answer: "B",
-    description: "포장 스터커 안 붙이면 헷갈리죠~",
-  },
-  {
-    title: `손님: "HOT이요."
-    알바: (여기에 들어갈 멘트는?)`,
-    type: "MULTIPLE",
-    options: [
-      {
-        label: "A",
-        content: "알겠습니다~ 라지 괜찮으세요?",
-      },
-      {
-        label: "B",
-        content: "네 그래요.",
-      },
-    ],
-    answer: "A",
-    description:
-      "조금만 친절하게 말하자~ 밝게 대화하는 게 멋쟁이 알통 스타일이여~",
-  },
-];
+// const quizList = [
+//   {
+//     title: "결제 전에 주문 내역을 확인하면 좋다!",
+//     type: "OX",
+//     answer: "O",
+//     description: "요건 습관처럼 해야 돼요~ 실수는 예방이 최고!",
+//   },
+//   {
+//     title: "포장 주문 시 꼭 확인해야 할 것은?",
+//     type: "MULTIPLE",
+//     options: [
+//       {
+//         label: "A",
+//         content: "결제 방식 확인",
+//       },
+//       {
+//         label: "B",
+//         content: "포장 스티커",
+//       },
+//     ],
+//     answer: "B",
+//     description: "포장 스터커 안 붙이면 헷갈리죠~",
+//   },
+//   {
+//     title: `손님: "HOT이요."
+//     알바: (여기에 들어갈 멘트는?)`,
+//     type: "MULTIPLE",
+//     options: [
+//       {
+//         label: "A",
+//         content: "알겠습니다~ 라지 괜찮으세요?",
+//       },
+//       {
+//         label: "B",
+//         content: "네 그래요.",
+//       },
+//     ],
+//     answer: "A",
+//     description:
+//       "조금만 친절하게 말하자~ 밝게 대화하는 게 멋쟁이 알통 스타일이여~",
+//   },
+// ];
 
+type Quiz = {
+  id: number;
+  type: "OX" | "MULTIPLE";
+  question: string;
+  options: string[];
+  answer: string;
+  explanation: string;
+  isCompleted: boolean;
+  isCorrect: boolean | null;
+};
 // 퀴즈
 function QuizContainer() {
+  const { trainingId } = useParams();
+  const [quizList, setQuizList] = useState<Quiz[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchQuizData = async () => {
+      try {
+        setError(null);
+        setLoading(true);
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          setError("로그인이 필요합니다.");
+          return;
+        }
+
+        const res = await axios.get(
+          `https://altong.store/api/trainings/${trainingId}/quiz`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Cache-Control": "no-cache, no-store, must-revalidate",
+            },
+          }
+        );
+
+        if (res.status === 401) {
+          console.warn("401 Unauthorized - 토큰 만료 또는 유효하지 않음");
+          localStorage.removeItem("accessToken");
+          navigate("/login");
+          return;
+        }
+
+        const apiData = res.data.data || [];
+        console.log("quiz 응답 :", apiData);
+        const parsedQuiz = apiData.map((q: any) => ({
+          id: q.id,
+          type: q.type,
+          question: q.question,
+          options: JSON.parse(q.options), // 문자열 -> 배열 변환
+          answer: q.answer,
+          explanation: q.explanation,
+          isCompleted: q.isCompleted,
+          isCorrect: q.isCorrect,
+        }));
+
+        setQuizList(parsedQuiz);
+      } catch (err) {
+        console.error("퀴즈 불러오기 실패:", err);
+        setError("퀴즈 정보를 불러오는 중 오류가 발생했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuizData();
+  }, [trainingId]);
+
+  if (loading) return <div>로딩 중...</div>;
+  if (error) return <div>{error}</div>;
+  if (!quizList.length) return <div>등록된 퀴즈가 없습니다.</div>;
+
   return (
     <QuizLayout>
       {quizList.map((item, index) => (
         <QuizItem
+          key={item.id}
           index={index + 1}
-          key={index}
-          type={item.type as "OX" | "MULTIPLE"}
-          options={item.options || []}
-          title={item.title}
+          type={item.type}
+          options={item.options.map((o: string) => ({
+            label: o[0], // "A) 바닥과 테이블" → label: "A"
+            content: o.slice(3), // 내용만 추출
+          }))}
+          title={item.question}
           answer={item.answer}
-          description={item.description}
+          description={item.explanation}
         />
       ))}
     </QuizLayout>
@@ -146,7 +192,7 @@ function QuizContainer() {
 export function EducationDetailsPage() {
   const { trainingId } = useParams(); // URL 파라미터 가져오기
   const { activeTab } = useOutletContext<{ activeTab: "manual" | "quiz" }>();
-
+  const navigate = useNavigate();
   const [data, setData] = useState<{
     title: string;
     goal: string;
@@ -178,6 +224,13 @@ export function EducationDetailsPage() {
             },
           }
         );
+
+        if (res.status === 401) {
+          console.warn("401 Unauthorized - 토큰 만료 또는 유효하지 않음");
+          localStorage.removeItem("accessToken");
+          navigate("/login");
+          return;
+        }
 
         const apiData = res?.data?.data;
         setData(apiData);
