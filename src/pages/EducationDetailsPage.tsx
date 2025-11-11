@@ -127,8 +127,10 @@ function QuizContainer() {
 
   // 알바생 답안 제출 함수
   const handleSubmitAnswer = async (quizId: number, selectedAnswer: string) => {
+    const scrollY = window.scrollY; //현재 스크롤 위치 저장
     try {
       setSelectedAnswers((prev) => ({ ...prev, [quizId]: selectedAnswer })); // 클릭한 답 저장
+      console.log(selectedAnswers);
       const token = localStorage.getItem("accessToken");
       if (!token) return;
 
@@ -146,6 +148,11 @@ function QuizContainer() {
       await fetchQuizData(); // 제출 후 다시 조회
     } catch (err) {
       console.error("퀴즈 제출 실패:", err);
+    } finally {
+      // 렌더 완료 후, 스크롤을 원래 위치로 되돌림
+      setTimeout(() => {
+        window.scrollTo({ top: scrollY, behavior: "instant" });
+      }, 0);
     }
   };
 
