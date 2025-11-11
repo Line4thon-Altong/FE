@@ -108,11 +108,11 @@ export function HomeContent({
           ))}
         </EducationItemContainer>
 
-        {userType === "owner" && (
+        {/* {userType === "owner" && (
           <PlusIconContainer>
             <PlusIcon width={24} height={24} color={theme.colors.gray3} />
           </PlusIconContainer>
-        )}
+        )} */}
       </ManagementContainer>
     </Container>
   );
