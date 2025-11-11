@@ -1,8 +1,10 @@
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import image from "@/assets/temp/education-details.png";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
+import axios from "axios";
 import { QuizItem } from "@/components/education-details/quiz-item";
+import { useEffect, useState } from "react";
 
 const goal = "손님을 웃게 만드는 주문, 실수 없는 결제";
 
@@ -36,16 +38,28 @@ const attentionPoints = [
 ];
 
 // 매뉴얼
-function ManualContainer() {
+function ManualContainer({
+  data,
+}: {
+  data: {
+    title: string;
+    goal: string;
+    procedure: { step: string; details: string[] }[];
+    precaution: string[];
+    cardnewsImageUrl: string;
+  };
+}) {
   return (
     <Container>
-      <GoalTitle>📌 목표: {goal}</GoalTitle>
+      <GoalTitle>📌 목표: {data.goal}</GoalTitle>
       <Hr />
       <ManualSection>
-        {manualList.map((item, index) => (
+        {data.procedure.map((item, index) => (
           <ManualItem key={index}>
-            <ManualSubTitle>{item.subTitle}</ManualSubTitle>
-            <ManualContent>{item.content}</ManualContent>
+            <ManualSubTitle>{item.step}</ManualSubTitle>
+            {item.details.map((d, i) => (
+              <ManualContent key={i}>{d}</ManualContent>
+            ))}
           </ManualItem>
         ))}
       </ManualSection>
@@ -53,15 +67,15 @@ function ManualContainer() {
       <AttentionSection>
         <AttentionTitle>⚠️ 주의 포인트</AttentionTitle>
         <AttentionPointList>
-          {attentionPoints.map((point, index) => (
-            <AttentionPoint key={index}>{point}</AttentionPoint>
+          {data.precaution.map((point, i) => (
+            <AttentionPoint key={i}>{point}</AttentionPoint>
           ))}
         </AttentionPointList>
       </AttentionSection>
 
       <SummarySection>
         <SummaryTitle>💪 알통 4컷 요약</SummaryTitle>
-        <SummaryImage src={image} alt="education-details" />
+        <SummaryImage src={data.cardnewsImageUrl} alt="education-details" />
       </SummarySection>
     </Container>
   );
@@ -130,8 +144,63 @@ function QuizContainer() {
 }
 
 export function EducationDetailsPage() {
+  const { trainingId } = useParams(); // URL 파라미터 가져오기
   const { activeTab } = useOutletContext<{ activeTab: "manual" | "quiz" }>();
-  return activeTab === "manual" ? <ManualContainer /> : <QuizContainer />;
+
+  const [data, setData] = useState<{
+    title: string;
+    goal: string;
+    procedure: { step: string; details: string[] }[];
+    precaution: string[];
+    cardnewsImageUrl: string;
+  } | null>(null);
+
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchEducationDetails = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("accessToken");
+
+        if (!token) {
+          setError("로그인이 필요합니다.");
+          return;
+        }
+
+        const res = await axios.get(
+          `https://altong.store/api/trainings/${trainingId}/manuals`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Cache-Control": "no-cache, no-store, must-revalidate",
+            },
+          }
+        );
+
+        const apiData = res?.data?.data;
+        setData(apiData);
+      } catch (err) {
+        console.error("교육 상세 불러오기 실패:", err);
+        setError("교육 정보를 불러오는 중 오류가 발생했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEducationDetails();
+  }, [trainingId]);
+
+  if (loading) return <div>로딩 중...</div>;
+  if (error) return <div>{error}</div>;
+  if (!data) return null;
+
+  return activeTab === "manual" ? (
+    <ManualContainer data={data} />
+  ) : (
+    <QuizContainer />
+  );
 }
 
 const Container = styled.div`
