@@ -71,6 +71,9 @@ export function HomePageOwner() {
 
     fetchDashboardData();
   }, []);
+  const handleEducationClick = (id) => {
+    navigate(`/education-details/${id}`);
+  };
 
   return (
     <HomeContent
@@ -79,6 +82,7 @@ export function HomePageOwner() {
       educationItems={educationItems}
       onEmployeeManageClick={handleEmployeeManage}
       onCreateEducationClick={handleCreateEducation}
+      onEducationClick={handleEducationClick}
     />
   );
 }

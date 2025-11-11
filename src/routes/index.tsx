@@ -141,7 +141,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "/education-details",
+    path: "/education-details/:trainingId",
     element: <EducationDetailsLayout />,
     handle: {
       title: "교육 상세",

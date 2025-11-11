@@ -12,6 +12,7 @@ type HomeContentProps = {
   educationItems: { title: string; date: string }[];
   onEmployeeManageClick?: () => void;
   onCreateEducationClick?: () => void;
+  onEducationClick?: (id: number) => void;
   onCheckIn?: () => void;
   onCheckOut?: () => void;
   isCheckedIn?: boolean;
@@ -23,6 +24,7 @@ export function HomeContent({
   educationItems,
   onEmployeeManageClick,
   onCreateEducationClick,
+  onEducationClick,
   onCheckIn,
   onCheckOut,
   isCheckedIn,
@@ -104,7 +106,12 @@ export function HomeContent({
 
         <EducationItemContainer>
           {educationItems.map((item, index) => (
-            <EducationItem key={index} title={item.title} date={item.date} />
+            <EducationItem
+              key={index}
+              title={item.title}
+              date={item.date}
+              onClick={() => onEducationClick(item.id)}
+            />
           ))}
         </EducationItemContainer>
 

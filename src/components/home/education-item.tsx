@@ -4,12 +4,14 @@ import ArrowRightIcon from "@/assets/icons/ic_arrow-right";
 export function EducationItem({
   title,
   date,
+  onClick,
 }: {
   title: string;
   date: string;
+  onClick?: () => void;
 }) {
   return (
-    <EducationItemWrapper>
+    <EducationItemWrapper onClick={onClick} style={{ cursor: "pointer" }}>
       <EducationItemTitle>
         <EducationItemTitleText>{title}</EducationItemTitleText>
         <EducationItemDate>{date}</EducationItemDate>
