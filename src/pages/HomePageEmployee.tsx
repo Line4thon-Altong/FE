@@ -1,10 +1,16 @@
 // src/pages/HomePageEmployee.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HomeContent } from "./HomeContent";
 import { Alert } from "@/components/alert";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
 
 export function HomePageEmployee() {
+  const navigate = useNavigate();
+  const [educationItems, setEducationItems] = useState([]);
+  const [error, setError] = useState(null);
+
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [showCheckInModal, setShowCheckInModal] = useState(false);
   const [showCheckOutModal, setShowCheckOutModal] = useState(false);
@@ -24,12 +30,62 @@ export function HomePageEmployee() {
     setShowCheckOutModal(true);
   };
 
-  const educationItems = [
-    { title: "위생 교육", date: "2025.01.01" },
-    { title: "POS 사용법", date: "2025.01.05" },
-    { title: "위생 교육", date: "2025.01.01" },
-    { title: "POS 사용법", date: "2025.01.05" },
-  ];
+  const formatDate = (s) => {
+    if (!s) return "";
+    const d = new Date(s.replace(" ", "T"));
+    if (Number.isNaN(d.getTime())) return s; // 파싱 실패 시 원문 유지
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}.${m}.${day}`;
+  };
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setError(null);
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          setError("로그인이 필요합니다.");
+          return;
+        }
+
+        const res = await axios.get(
+          "https://altong.store/api/trainings/dashboard/employee",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Cache-Control": "no-cache, no-store, must-revalidate",
+            },
+          }
+        );
+
+        // 응답: { code, message, data: { employeeCount, trainings } }
+        const apiData = res?.data?.data;
+        const ts = Array.isArray(apiData?.trainings) ? apiData.trainings : [];
+
+        setEducationItems(
+          ts.map((t) => ({
+            id: t.id,
+            title: t.title,
+            date: formatDate(t.createdAt),
+          }))
+        );
+      } catch (e) {
+        if (e.response?.status === 401) {
+          console.warn("401 Unauthorized - 토큰 만료 또는 유효하지 않음");
+          navigate("/login");
+          return;
+        }
+        console.error(e);
+        setError("대시보드 데이터를 불러오지 못했습니다.");
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+  const handleEducationClick = (id) => {
+    navigate(`/education-details/${id}`);
+  };
 
   return (
     <>
@@ -59,6 +115,7 @@ export function HomePageEmployee() {
         onCheckIn={handleCheckIn}
         onCheckOut={handleCheckOut}
         isCheckedIn={isCheckedIn}
+        onEducationClick={handleEducationClick}
       />
     </>
   );

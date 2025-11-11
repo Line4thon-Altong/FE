@@ -51,49 +51,6 @@ function ManualContainer({
   );
 }
 
-// const quizList = [
-//   {
-//     title: "결제 전에 주문 내역을 확인하면 좋다!",
-//     type: "OX",
-//     answer: "O",
-//     description: "요건 습관처럼 해야 돼요~ 실수는 예방이 최고!",
-//   },
-//   {
-//     title: "포장 주문 시 꼭 확인해야 할 것은?",
-//     type: "MULTIPLE",
-//     options: [
-//       {
-//         label: "A",
-//         content: "결제 방식 확인",
-//       },
-//       {
-//         label: "B",
-//         content: "포장 스티커",
-//       },
-//     ],
-//     answer: "B",
-//     description: "포장 스터커 안 붙이면 헷갈리죠~",
-//   },
-//   {
-//     title: `손님: "HOT이요."
-//     알바: (여기에 들어갈 멘트는?)`,
-//     type: "MULTIPLE",
-//     options: [
-//       {
-//         label: "A",
-//         content: "알겠습니다~ 라지 괜찮으세요?",
-//       },
-//       {
-//         label: "B",
-//         content: "네 그래요.",
-//       },
-//     ],
-//     answer: "A",
-//     description:
-//       "조금만 친절하게 말하자~ 밝게 대화하는 게 멋쟁이 알통 스타일이여~",
-//   },
-// ];
-
 type Quiz = {
   id: number;
   type: "OX" | "MULTIPLE";
@@ -209,21 +166,22 @@ export function EducationDetailsPage() {
       try {
         setLoading(true);
         const token = localStorage.getItem("accessToken");
-
+        const userType = localStorage.getItem("usertype");
         if (!token) {
           setError("로그인이 필요합니다.");
           return;
         }
+        const baseUrl =
+          userType === "employee"
+            ? `https://altong.store/api/employees/trainings/${trainingId}/manuals`
+            : `https://altong.store/api/trainings/${trainingId}/manuals`;
 
-        const res = await axios.get(
-          `https://altong.store/api/trainings/${trainingId}/manuals`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Cache-Control": "no-cache, no-store, must-revalidate",
-            },
-          }
-        );
+        const res = await axios.get(baseUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+          },
+        });
 
         if (res.status === 401) {
           console.warn("401 Unauthorized - 토큰 만료 또는 유효하지 않음");

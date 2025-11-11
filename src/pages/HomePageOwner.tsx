@@ -65,6 +65,11 @@ export function HomePageOwner() {
         );
       } catch (e) {
         console.error(e);
+        if (e.response?.status === 401) {
+          console.warn("401 Unauthorized - 토큰 만료 또는 유효하지 않음");
+          navigate("/login");
+          return;
+        }
         setError("대시보드 데이터를 불러오지 못했습니다.");
       }
     };
