@@ -67,58 +67,85 @@ function QuizContainer() {
   const [quizList, setQuizList] = useState<Quiz[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const userType = localStorage.getItem("usertype");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchQuizData = async () => {
-      try {
-        setError(null);
-        setLoading(true);
-        const token = localStorage.getItem("accessToken");
-        if (!token) {
-          setError("로그인이 필요합니다.");
-          return;
-        }
+  const fetchQuizData = async () => {
+    try {
+      setError(null);
+      setLoading(true);
+      const token = localStorage.getItem("accessToken");
 
-        const res = await axios.get(
-          `https://altong.store/api/trainings/${trainingId}/quiz`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Cache-Control": "no-cache, no-store, must-revalidate",
-            },
-          }
-        );
-
-        if (res.status === 401) {
-          console.warn("401 Unauthorized - 토큰 만료 또는 유효하지 않음");
-          localStorage.removeItem("accessToken");
-          navigate("/login");
-          return;
-        }
-
-        const apiData = res.data.data || [];
-        console.log("quiz 응답 :", apiData);
-        const parsedQuiz = apiData.map((q: any) => ({
-          id: q.id,
-          type: q.type,
-          question: q.question,
-          options: JSON.parse(q.options), // 문자열 -> 배열 변환
-          answer: q.answer,
-          explanation: q.explanation,
-          isCompleted: q.isCompleted,
-          isCorrect: q.isCorrect,
-        }));
-
-        setQuizList(parsedQuiz);
-      } catch (err) {
-        console.error("퀴즈 불러오기 실패:", err);
-        setError("퀴즈 정보를 불러오는 중 오류가 발생했습니다.");
-      } finally {
-        setLoading(false);
+      if (!token) {
+        setError("로그인이 필요합니다.");
+        return;
       }
-    };
 
+      const baseUrl =
+        userType === "employee"
+          ? `https://altong.store/api/employees/trainings/${trainingId}/quiz`
+          : `https://altong.store/api/trainings/${trainingId}/quiz`;
+
+      const res = await axios.get(baseUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
+      });
+
+      if (res.status === 401) {
+        console.warn("401 Unauthorized - 토큰 만료 또는 유효하지 않음");
+        localStorage.removeItem("accessToken");
+        navigate("/login");
+        return;
+      }
+
+      const apiData = res.data.data || [];
+      console.log("quiz 응답 :", apiData);
+      const parsedQuiz = apiData.map((q: any) => ({
+        id: q.id,
+        type: q.type,
+        question: q.question,
+        options: JSON.parse(q.options), // 문자열 -> 배열 변환
+        answer: q.answer,
+        explanation: q.explanation,
+        isCompleted: q.isCompleted,
+        isCorrect: q.isCorrect,
+      }));
+
+      setQuizList(parsedQuiz);
+    } catch (err) {
+      console.error("퀴즈 불러오기 실패:", err);
+      setError("퀴즈 정보를 불러오는 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 알바생 답안 제출 함수
+  const handleSubmitAnswer = async (quizId: number, selectedAnswer: string) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+
+      await axios.post(
+        `https://altong.store/api/employees/trainings/${trainingId}/quiz/${quizId}`,
+        { selectedAnswer },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      await fetchQuizData(); // 제출 후 다시 조회
+    } catch (err) {
+      console.error("퀴즈 제출 실패:", err);
+    }
+  };
+
+  useEffect(() => {
     fetchQuizData();
   }, [trainingId]);
 
@@ -140,6 +167,11 @@ function QuizContainer() {
           title={item.question}
           answer={item.answer}
           description={item.explanation}
+          isCompleted={item.isCompleted}
+          isCorrect={item.isCorrect}
+          userType={userType}
+          onSubmitAnswer={handleSubmitAnswer}
+          quizId={item.id}
         />
       ))}
     </QuizLayout>
@@ -150,6 +182,7 @@ export function EducationDetailsPage() {
   const { trainingId } = useParams(); // URL 파라미터 가져오기
   const { activeTab } = useOutletContext<{ activeTab: "manual" | "quiz" }>();
   const navigate = useNavigate();
+
   const [data, setData] = useState<{
     title: string;
     goal: string;

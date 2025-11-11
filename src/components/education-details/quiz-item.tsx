@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import { SmallButton } from "@/components/small-button";
+import { useState } from "react";
 
 export function QuizItem({
   index,
@@ -9,6 +10,11 @@ export function QuizItem({
   description,
   type,
   options,
+  isCompleted,
+  isCorrect,
+  userType,
+  quizId,
+  onSubmitAnswer,
 }: {
   index: number;
   type: "OX" | "MULTIPLE";
@@ -16,7 +22,37 @@ export function QuizItem({
   title: string;
   answer: string;
   description: string;
+  isCompleted: boolean;
+  isCorrect: boolean | null;
+  userType?: string | null;
+  quizId: number;
+  onSubmitAnswer?: (quizId: number, selectedAnswer: string) => void;
 }) {
+  const handleClick = (option: { label: string; content: string }) => {
+    if (userType === "employee" && !isCompleted && onSubmitAnswer) {
+      const selected =
+        type === "OX" ? option.label : `${option.label}) ${option.content}`;
+      setClicked(selected);
+      onSubmitAnswer(quizId, selected);
+    }
+  };
+  const [clicked, setClicked] = useState<string | null>(null);
+
+  // 배경색 직접 제어
+  const getBgColor = (option: { label: string; content: string }) => {
+    const optionText =
+      type === "OX" ? option.label : `${option.label}) ${option.content}`;
+
+    // 내가 클릭한 보기 → 오렌지색 유지
+    if (clicked === optionText) return theme.colors.main;
+
+    // 오답일 경우 → 정답 보기만 빨간색
+    if (isCompleted && isCorrect === false && optionText === answer)
+      return theme.colors.negative;
+
+    // 기본 회색
+    return theme.colors.gray3;
+  };
   return (
     <QuizItemWrapper>
       <QuizTitle>
@@ -25,25 +61,50 @@ export function QuizItem({
         </QuizTitleText>
         <QuizTitleContent>{title}</QuizTitleContent>
       </QuizTitle>
-      {type === "OX" && (
-        <QuizAnswer>
-          <QuizAnswerItem>O</QuizAnswerItem>
-          <QuizAnswerItem>X</QuizAnswerItem>
-        </QuizAnswer>
+      <QuizAnswer>
+        {type === "OX"
+          ? ["O", "X"].map((opt) => (
+              <QuizAnswerItem
+                key={opt}
+                onClick={() => handleClick({ label: opt, content: "" })}
+                style={{
+                  backgroundColor: getBgColor({ label: opt, content: "" }),
+                  cursor:
+                    userType === "employee" && !isCompleted
+                      ? "pointer"
+                      : "default",
+                  transition: "background-color 0.3s ease",
+                }}
+              >
+                {opt}
+              </QuizAnswerItem>
+            ))
+          : options.map((option) => (
+              <QuizAnswerItem
+                key={option.label}
+                onClick={() => handleClick(option)}
+                style={{
+                  backgroundColor: getBgColor(option),
+                  cursor:
+                    userType === "employee" && !isCompleted
+                      ? "pointer"
+                      : "default",
+                  transition: "background-color 0.3s ease",
+                }}
+              >
+                {option.label}) {option.content}
+              </QuizAnswerItem>
+            ))}
+      </QuizAnswer>
+      {/* 사장님 or (알바생인데 이미 맞춘 경우)만 해설·정답 표시 */}
+      {(userType === "owner" || (userType === "employee" && isCompleted)) && (
+        <>
+          <QuizDescription>해설: {description}</QuizDescription>
+          <ButtonWrapper>
+            <SmallButton text={`정답: ${answer}`} />
+          </ButtonWrapper>
+        </>
       )}
-      {type === "MULTIPLE" && (
-        <QuizAnswer>
-          {options.map((option) => (
-            <QuizAnswerItem key={option.label}>
-              {option.label}) {option.content}
-            </QuizAnswerItem>
-          ))}
-        </QuizAnswer>
-      )}
-      <QuizDescription>해설: {description}</QuizDescription>
-      <ButtonWrapper>
-        <SmallButton text={`정답: ${answer}`} />
-      </ButtonWrapper>
     </QuizItemWrapper>
   );
 }
