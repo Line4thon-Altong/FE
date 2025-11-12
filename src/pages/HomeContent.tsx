@@ -3,13 +3,12 @@ import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import { SmallButton } from "@/components/small-button";
 import PersonFillIcon from "@/assets/icons/ic_person-fill";
-import PlusIcon from "@/assets/icons/ic_plus-fill";
 import { EducationItem } from "@/components/home/education-item";
 
 type HomeContentProps = {
   userType: "owner" | "employee";
   employeeCount?: number;
-  educationItems: { title: string; date: string }[];
+  educationItems: { title: string; date: string; id?: number }[];
   onEmployeeManageClick?: () => void;
   onCreateEducationClick?: () => void;
   onEducationClick?: (id: number) => void;
@@ -110,7 +109,7 @@ export function HomeContent({
               key={index}
               title={item.title}
               date={item.date}
-              onClick={() => onEducationClick(item.id)}
+              onClick={() => onEducationClick && item.id && onEducationClick(item.id)}
             />
           ))}
         </EducationItemContainer>
@@ -198,12 +197,6 @@ const EducationItemContainer = styled.div`
   flex-direction: column;
   gap: 18px;
   margin: 18px 0;
-`;
-
-const PlusIconContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 
 //직원 출퇴근 버튼 추가

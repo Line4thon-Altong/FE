@@ -10,8 +10,7 @@ export function HomePageOwner() {
   const handleEmployeeManage = () => navigate("/employee-management");
   const handleCreateEducation = () => navigate("/education-management");
   const [employeeCount, setEmployeeCount] = useState(0);
-  const [educationItems, setEducationItems] = useState([]);
-  const [error, setError] = useState(null);
+  const [educationItems, setEducationItems] = useState<{ id: number; title: string; date: string }[]>([]);
 
   // const educationItems = [
   //   { title: "교육 1", date: "2025.01.01" },
@@ -21,7 +20,7 @@ export function HomePageOwner() {
   // ];
 
   // "2025-11-11 05:27" -> "2025.11.11"
-  const formatDate = (s) => {
+  const formatDate = (s: string) => {
     if (!s) return "";
     const d = new Date(s.replace(" ", "T"));
     if (Number.isNaN(d.getTime())) return s; // 파싱 실패 시 원문 유지
@@ -33,10 +32,9 @@ export function HomePageOwner() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        setError(null);
         const token = localStorage.getItem("accessToken");
         if (!token) {
-          setError("로그인이 필요합니다.");
+          console.warn("로그인이 필요합니다.");
           return;
         }
 
@@ -57,21 +55,20 @@ export function HomePageOwner() {
 
         setEmployeeCount(ec);
         setEducationItems(
-          ts.map((t) => ({
+          ts.map((t: { id: number; title: string; createdAt: string }) => ({
             id: t.id,
             title: t.title,
             date: formatDate(t.createdAt),
           }))
         );
-      } catch (e) {
-        console.error(e);
-        setError("대시보드 데이터를 불러오지 못했습니다.");
+      } catch (e: unknown) {
+        console.error("대시보드 데이터를 불러오지 못했습니다:", e);
       }
     };
 
     fetchDashboardData();
   }, []);
-  const handleEducationClick = (id) => {
+  const handleEducationClick = (id: number) => {
     navigate(`/education-details/${id}`);
   };
 
