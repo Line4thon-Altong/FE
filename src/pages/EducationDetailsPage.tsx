@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
-import image from "@/assets/temp/education-details.png";
 import { useOutletContext, useParams } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
