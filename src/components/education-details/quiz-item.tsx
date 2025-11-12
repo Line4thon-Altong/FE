@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import { SmallButton } from "@/components/small-button";
-import { useState } from "react";
 
 export function QuizItem({
   index,
