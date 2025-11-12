@@ -109,9 +109,12 @@ export function EmployeeManagementPage() {
       )}
       <Content>
         <SearchBar placeholder="알바생 검색" />
-        <ButtonContainer>
-          <SmallButton text="추가하기" onClick={handleAddEmployee} />
-        </ButtonContainer>
+        {isSchedule == true ? null : (
+          <ButtonContainer>
+            <SmallButton text="추가하기" onClick={handleAddEmployee} />
+          </ButtonContainer>
+        )}
+
         {/* <EmployeeListContainer>
           {employeeList_test.map((employee, index) => (
             <EmployeeItem

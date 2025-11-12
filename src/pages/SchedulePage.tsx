@@ -47,6 +47,7 @@ export function SchedulePage() {
   const [currentMonth, setCurrentMonth] = useState(new Date()); // ✅ 현재 달 동적
   const [selectedDate, setSelectedDate] = useState<string | null>(null); //클릭된 날짜 관리
   const todayStr = format(new Date(), "yyyy-MM-dd");
+  const userType = localStorage.getItem("usertype");
 
   // 클릭 시 모달 열기
   const handleDayClick = (dateStr: string) => {
@@ -81,14 +82,17 @@ export function SchedulePage() {
           onClose={() => setSelectedDate(null)}
         />
       )}
-      <ButtonWrapper>
-        <SmallButton
-          text="일정 추가하기"
-          onClick={() =>
-            navigate("/employee-management", { state: { isSchedule: true } })
-          }
-        />
-      </ButtonWrapper>
+      {userType == "owner" ? (
+        <ButtonWrapper>
+          <SmallButton
+            text="일정 추가하기"
+            onClick={() =>
+              navigate("/employee-management", { state: { isSchedule: true } })
+            }
+          />
+        </ButtonWrapper>
+      ) : null}
+
       <CalendarWrapper>
         <Header>
           <div>
