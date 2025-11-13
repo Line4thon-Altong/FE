@@ -2,15 +2,14 @@
 import axios from "axios";
 
 export async function createSchedule({
-  storeId,
   employeeId,
   workDates,
 }: {
-  storeId: number | string;
   employeeId: number | string;
   workDates: string[];
 }) {
   const token = localStorage.getItem("accessToken");
+  const storeId = localStorage.getItem("storeId");
 
   if (!token) {
     throw new Error("토큰이 없습니다. 로그인 상태를 확인하세요.");

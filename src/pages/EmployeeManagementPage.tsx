@@ -118,8 +118,7 @@ export function EmployeeManagementPage() {
     const workDates = generateScheduleDates(selectedDays);
 
     await createSchedule({
-      storeId: localStorage.getItem("username"),
-      employeeId: selectedEmployee.username,
+      employeeId: selectedEmployee.id,
       workDates,
     });
 

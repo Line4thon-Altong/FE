@@ -26,6 +26,7 @@ export function MyPage() {
     try {
       const userType = localStorage.getItem("userType");
       const refreshToken = localStorage.getItem("refreshToken");
+      const token = localStorage.getItem("accessToken");
 
       if (!refreshToken) {
         console.error("No refresh token found.");
@@ -41,8 +42,8 @@ export function MyPage() {
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: JSON.stringify({ refreshToken }),
       });
