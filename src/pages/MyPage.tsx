@@ -73,9 +73,10 @@ export function MyPage() {
         //  로컬스토리지 비우기
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        localStorage.removeItem("userType");
+        localStorage.removeItem("usertype");
         localStorage.removeItem("userId");
         localStorage.removeItem("userName");
+        localStorage.removeItem("storeName");
 
         navigate("/login");
       } else {
