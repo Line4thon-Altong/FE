@@ -235,6 +235,7 @@ const EditInput = styled.input`
   border-radius: 6px;
   font-size: ${theme.texts.body8.fontSize};
   color: ${theme.colors.gray1};
+  font-family: inherit;
 `;
 
 const EditTextarea = styled.textarea`
@@ -245,6 +246,7 @@ const EditTextarea = styled.textarea`
   font-size: ${theme.texts.body8.fontSize};
   color: ${theme.colors.gray1};
   resize: none;
+  font-family: inherit;
 `;
 
 const SaveButton = styled.button`
