@@ -4,12 +4,17 @@ import StoreIcon from "@/assets/icons/ic_store";
 import ArrowRightIcon from "@/assets/icons/ic_arrow-right";
 import { Alert } from "@/components/alert";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export function MyPage() {
   const navigate = useNavigate();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [userInfo, setUserInfo] = useState<{
+    storeName?: string;
+    username?: string;
+  } | null>(null);
   const handleAccountClick = () => {
     navigate("/mypage/account");
   };
@@ -17,6 +22,23 @@ export function MyPage() {
   const handleLogoutClick = () => {
     setIsAlertOpen(true);
   };
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get("https://altong.store/api/auth/me", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
+        setUserInfo(response.data.data);
+        console.log(response.data.data);
+      } catch (error) {
+        console.error("User info fetch failed:", error);
+      }
+    };
+    fetchUserInfo();
+  }, []);
 
   // 로그아웃 실행 함수
   const handleConfirmLogout = async () => {
@@ -85,8 +107,8 @@ export function MyPage() {
             <StoreIcon width={45} height={45} />
           </IconContainer>
           <InfoTextContainer>
-            <Title>멋쟁이알통</Title>
-            <Id>altong1234</Id>
+            <Title>{userInfo?.storeName}</Title>
+            <Id>{userInfo?.username}</Id>
           </InfoTextContainer>
         </InfoContainer>
         {/* 리스트 */}

@@ -3,7 +3,6 @@ import ScheduleIcon from "@/assets/icons/ic_schedule";
 import EducationIcon from "@/assets/icons/ic_education";
 import PersonIcon from "@/assets/icons/ic_person";
 import { theme } from "@/styles/theme";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 interface NavigationProps {
   activeItem: "schedule" | "education" | "myPage";
