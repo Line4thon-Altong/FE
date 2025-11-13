@@ -6,15 +6,25 @@ import { Alert } from "@/components/alert";
 import { theme } from "@/styles/theme";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { ScheduleModal } from "@/components/employee-management/schedule-modal";
+
+import { generateScheduleDates } from "@/scheduleFunc/generateScheduleDates";
+import { createSchedule } from "@/scheduleFunc/useScheduleAPI";
+
 import axios from "axios";
 
 export function EmployeeManagementPage() {
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
   const [employeeList, setEmployeeList] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState<any>(null); // 삭제할 알바생 저장
-  const [error, setError] = useState<string | null>(null); //  에러 상태 추가
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+
+  const [error, setError] = useState<string | null>(null);
+
   const isSchedule =
     (location.state as { isSchedule?: boolean })?.isSchedule ?? false;
 
@@ -96,8 +106,37 @@ export function EmployeeManagementPage() {
     navigate("/employee-management/add");
   };
 
+  // 일정 등록 모드에서 직원 선택 시
+  const handleSelectEmployee = (employee: any) => {
+    if (!isSchedule) return;
+    setSelectedEmployee(employee);
+    setScheduleModalOpen(true);
+  };
+
+  // 일정 저장
+  const handleConfirmSchedule = async (selectedDays: string[]) => {
+    const workDates = generateScheduleDates(selectedDays);
+
+    await createSchedule({
+      storeId: localStorage.getItem("username"),
+      employeeId: selectedEmployee.username,
+      workDates,
+    });
+
+    setScheduleModalOpen(false);
+    alert("스케줄이 등록되었습니다!");
+  };
+
   return (
     <Container>
+      {scheduleModalOpen && (
+        <ScheduleModal
+          name={selectedEmployee?.name}
+          id={selectedEmployee?.username}
+          onClose={() => setScheduleModalOpen(false)}
+          onConfirm={handleConfirmSchedule}
+        />
+      )}
       {isAlertOpen && (
         <Alert
           title="알바생 삭제"
@@ -140,6 +179,7 @@ export function EmployeeManagementPage() {
                 name={employee.name}
                 id={employee.username}
                 onDelete={() => handleDeleteEmployee(employee)}
+                onSelect={() => handleSelectEmployee(employee)}
                 isSchedule={isSchedule}
               />
             ))
