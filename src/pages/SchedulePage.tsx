@@ -1,6 +1,6 @@
 import { theme } from "../styles/theme";
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -8,6 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { ScheduleModal } from "../components/scheduleModal";
 import { SmallButton } from "@/components/small-button";
+import axios from "axios";
 
 import {
   startOfMonth,
@@ -27,27 +28,111 @@ type ShiftWorker = {
 };
 
 export function SchedulePage() {
-  // 날짜별 근무자 데이터 (예시)
-  const shifts: Record<string, ShiftWorker[]> = {
-    "2025-10-06": [{ name: "민지", color: "#ffd6d6", id: "qwewqe" }],
-    "2025-10-08": [
-      { name: "다연", color: "#c8e7ff", id: "qwewqe" },
-      { name: "수현", color: "#d3f8d3", id: "qwewqe" },
-    ],
-    "2025-11-14": [{ name: "유나", color: "#ffe6b3", id: "qwewqe" }],
-    "2025-11-19": [{ name: "다연", color: "#c8e7ff", id: "qwewqe" }],
-    "2025-11-25": [
-      { name: "지훈", color: "#ffdee2", id: "qwewqe" },
-      { name: "태민", color: "#d0f0c0", id: "qwewqe" },
-      { name: "지훈", color: "#ffdee2", id: "qwewqe" },
-      { name: "태민", color: "#d0f0c0", id: "qwewqe" },
-    ],
-  };
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-  const [currentMonth, setCurrentMonth] = useState(new Date()); // ✅ 현재 달 동적
-  const [selectedDate, setSelectedDate] = useState<string | null>(null); //클릭된 날짜 관리
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const userType = localStorage.getItem("usertype");
+
+  const token = localStorage.getItem("accessToken");
+  const storeId = localStorage.getItem("storeId");
+  // 날짜별 근무자 데이터 (예시)
+  // const shifts: Record<string, ShiftWorker[]> = {
+  //   "2025-10-06": [{ name: "민지", color: "#ffd6d6", id: "qwewqe" }],
+  //   "2025-10-08": [
+  //     { name: "다연", color: "#c8e7ff", id: "qwewqe" },
+  //     { name: "수현", color: "#d3f8d3", id: "qwewqe" },
+  //   ],
+  //   "2025-11-14": [{ name: "유나", color: "#ffe6b3", id: "qwewqe" }],
+  //   "2025-11-19": [{ name: "다연", color: "#c8e7ff", id: "qwewqe" }],
+  //   "2025-11-25": [
+  //     { name: "지훈", color: "#ffdee2", id: "qwewqe" },
+  //     { name: "태민", color: "#d0f0c0", id: "qwewqe" },
+  //     { name: "지훈", color: "#ffdee2", id: "qwewqe" },
+  //     { name: "태민", color: "#d0f0c0", id: "qwewqe" },
+  //   ],
+  // };
+  const [shifts, setShifts] = useState<Record<string, ShiftWorker[]>>({});
+  // 색상 자동 배정용 (알바생 인원 많아도 중복 없이 돌림)
+  const colorSet = [
+    "#ffd6d6",
+    "#c8e7ff",
+    "#d3f8d3",
+    "#ffe6b3",
+    "#ffdee2",
+    "#d0f0c0",
+  ];
+  let colorIndex = 0;
+
+  const getNextColor = () => {
+    const color = colorSet[colorIndex % colorSet.length];
+    colorIndex++;
+    return color;
+  };
+
+  //현재 year / month
+  const year = currentMonth.getFullYear();
+  const month = currentMonth.getMonth() + 1;
+
+  // 직원별 고정 색상 저장하는 Map
+  const employeeColorMap = useRef<Record<number, string>>({});
+
+  // 서버에서 스케줄 불러오기
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        if (!token || !storeId) return;
+
+        let url = "";
+        let params = { year, month };
+
+        if (userType === "owner") {
+          // 사장님용 API
+          if (!storeId) return;
+          url = `https://altong.store/api/stores/${storeId}/schedules`;
+        } else {
+          // 알바생용 API
+          url = `https://altong.store/api/employees/me/schedules`;
+        }
+
+        const res = await axios.get(url, {
+          headers: { Authorization: `Bearer ${token}` },
+          params,
+        });
+
+        const schedules = res.data.data?.schedules || [];
+
+        const grouped: Record<string, ShiftWorker[]> = {};
+
+        schedules.forEach((item: any) => {
+          const date = item.workDate;
+
+          // 직원별 색상 고정
+          if (!employeeColorMap.current[item.employeeId]) {
+            employeeColorMap.current[item.employeeId] = getNextColor();
+          }
+
+          const fixedColor = employeeColorMap.current[item.employeeId];
+
+          if (!grouped[date]) grouped[date] = [];
+
+          grouped[date].push({
+            name: item.employeeName,
+            id: item.employeeId,
+            color: fixedColor,
+          });
+        });
+
+        setShifts(grouped);
+      } catch (err) {
+        console.error("스케줄 조회 실패", err);
+      }
+    };
+
+    fetchSchedules();
+  }, [year, month, token, storeId]);
+
+  ///////////////////////달력 생성 코드///////////////////////////
 
   // 클릭 시 모달 열기
   const handleDayClick = (dateStr: string) => {
