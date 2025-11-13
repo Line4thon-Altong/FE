@@ -7,6 +7,8 @@ import { useMatches } from "react-router-dom";
 export default function EducationDetailsLayout() {
   const matches = useMatches();
   const title = (matches.at(-1)?.handle as { title: string })?.title;
+  const [onDelete, setOnDelete] = useState<null | (() => void)>(null);
+  const [onEdit, setOnEdit] = useState<null | (() => void)>(null);
 
   const [activeTab, setActiveTab] = useState<"manual" | "quiz">("manual");
 
@@ -18,11 +20,17 @@ export default function EducationDetailsLayout() {
           headerType="details"
           activeTab={activeTab}
           onTabChange={setActiveTab}
+          onDelete={onDelete}
+          onEdit={onEdit}
         />
         <AreaContainer>
           {/* 아래에서 Outlet 대신 직접 조건부 렌더링 (또는 manual/quiz Container import해서 사용) */}
-          {activeTab === "manual" && <Outlet context={{ activeTab }} />}
-          {activeTab === "quiz" && <Outlet context={{ activeTab }} />}
+          {activeTab === "manual" && (
+            <Outlet context={{ activeTab, setOnDelete, setOnEdit }} />
+          )}
+          {activeTab === "quiz" && (
+            <Outlet context={{ activeTab, setOnDelete, setOnEdit }} />
+          )}
         </AreaContainer>
       </AppArea>
     </Viewport>

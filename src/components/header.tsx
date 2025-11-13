@@ -16,6 +16,10 @@ interface HeaderProps {
   title?: string;
   activeTab?: "manual" | "quiz";
   onTabChange?: (tab: "manual" | "quiz") => void;
+
+  //교육 수정 삭제
+  onDelete?: () => void;
+  onEdit?: () => void;
 }
 
 export function Header({
@@ -23,6 +27,8 @@ export function Header({
   headerType = "home",
   activeTab = "manual",
   onTabChange,
+  onDelete,
+  onEdit,
 }: HeaderProps) {
   const navigate = useNavigate();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -123,7 +129,12 @@ export function Header({
                 <SeeMoreOpenContainer
                   style={{ top: seeMorePos.top, right: seeMorePos.right }}
                 >
-                  <SeeMoreOpenItem>
+                  <SeeMoreOpenItem
+                    onClick={() => {
+                      onEdit && onEdit();
+                      setIsSeeMoreOpen(false);
+                    }}
+                  >
                     <EditIcon width={14} height={14} />
                     <SeeMoreOpenItemText>수정</SeeMoreOpenItemText>
                   </SeeMoreOpenItem>
@@ -159,6 +170,10 @@ export function Header({
           description="교육을 삭제하시겠습니까?"
           alertType="delete"
           onClose={() => setIsAlertOpen(false)}
+          onConfirm={() => {
+            onDelete && onDelete(); // DetailsPage에서 전달한 delete 로직 실행
+            setIsAlertOpen(false);
+          }}
         />
       )}
     </>

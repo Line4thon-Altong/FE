@@ -192,6 +192,7 @@ function QuizContainer() {
 export function EducationDetailsPage() {
   const { trainingId } = useParams(); // URL 파라미터 가져오기
   const { activeTab } = useOutletContext<{ activeTab: "manual" | "quiz" }>();
+  const { setOnDelete, setOnEdit } = useOutletContext();
   const navigate = useNavigate();
 
   const [data, setData] = useState<{
@@ -204,7 +205,7 @@ export function EducationDetailsPage() {
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
+  // 교육 조회 함수
   useEffect(() => {
     const fetchEducationDetails = async () => {
       try {
@@ -246,6 +247,24 @@ export function EducationDetailsPage() {
 
     fetchEducationDetails();
   }, [trainingId]);
+  //교육 삭제 함수
+  const deleteTraining = async () => {
+    const token = localStorage.getItem("accessToken");
+    await axios.delete(`https://altong.store/api/trainings/${trainingId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    navigate("/education");
+  };
+  //교육 수정 함수
+  const editTraining = () => {
+    navigate(`/education-details/${trainingId}/edit`);
+  };
+
+  useEffect(() => {
+    // Layout에 콜백 등록
+    setOnDelete(() => deleteTraining);
+    setOnEdit(() => editTraining);
+  }, []);
 
   if (loading) return <div>로딩 중...</div>;
   if (error) return <div>{error}</div>;
