@@ -45,6 +45,7 @@ export function LoginPage() {
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
         localStorage.setItem("usertype", loginType);
+        localStorage.setItem("storeName", response.data.data.storeName);
 
         // 홈으로 바로 이동
         if (loginType === "owner") navigate("/home/owner");

@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { Header } from "@/components/header";
 import { Navigation } from "@/components/navigation";
@@ -7,7 +7,16 @@ import { useMatches } from "react-router-dom";
 
 export default function HomeLayout() {
   const matches = useMatches();
-  const title = (matches.at(-1)?.handle as { title: string })?.title;
+  const location = useLocation();
+  const routeTitle = (matches.at(-1)?.handle as { title: string })?.title;
+
+  // usertype이 owner이고 storeName이 있으면 storeName을 사용, 없으면 routeTitle 사용
+  const storeName = localStorage.getItem("storeName");
+  const title =
+    localStorage.getItem("usertype") === "owner" && storeName
+      ? storeName
+      : routeTitle;
+
   // 현재 pathname을 기준으로 activeItem 결정
   const getActiveItem = () => {
     if (location.pathname.includes("/mypage")) return "myPage";
