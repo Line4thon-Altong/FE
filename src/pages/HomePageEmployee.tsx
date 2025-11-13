@@ -14,20 +14,59 @@ export function HomePageEmployee() {
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [showCheckInModal, setShowCheckInModal] = useState(false);
   const [showCheckOutModal, setShowCheckOutModal] = useState(false);
+
+  const [checkInTime, setCheckInTime] = useState(null);
+  const [checkOutTime, setCheckOutTime] = useState(null);
+
   // 모달 닫기
   const handleCloseModal = () => {
     if (showCheckInModal) setShowCheckInModal(false);
     if (showCheckOutModal) setShowCheckOutModal(false);
   };
-  //출근하기 클릭
-  const handleCheckIn = () => {
-    setIsCheckedIn(true);
-    setShowCheckInModal(true);
+  // 출근 버튼 클릭
+  const handleCheckIn = async () => {
+    const data = await requestCheck(
+      "https://altong.store/api/employees/me/schedules/check-in"
+    );
+
+    if (!data) return;
+    if (data.startTime) setCheckInTime(data.startTime);
+
+    setIsCheckedIn(true); // UI 상태 변경
+    setShowCheckInModal(true); // 출근 완료 모달 오픈
   };
   ///퇴근하기 클릭
-  const handleCheckOut = () => {
+  const handleCheckOut = async () => {
+    const data = await requestCheck(
+      "https://altong.store/api/employees/me/schedules/check-out"
+    );
+
+    if (!data) return;
+    if (data.endTime) setCheckOutTime(data.endTime);
+
     setIsCheckedIn(false);
     setShowCheckOutModal(true);
+  };
+
+  // 공통 axios 요청
+  const requestCheck = async (url) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const response = await axios.patch(
+        url,
+
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      return response.data;
+    } catch (err) {
+      console.error("출퇴근 요청 실패:", err);
+    }
   };
 
   const formatDate = (s) => {
@@ -93,7 +132,7 @@ export function HomePageEmployee() {
         <AlertWrapper>
           <Alert
             title="출근 완료"
-            description="8:53 출근 완료!"
+            description={`${checkInTime || ""} 출근 완료!`}
             alertType="alert"
             onClose={handleCloseModal}
           />
@@ -103,7 +142,7 @@ export function HomePageEmployee() {
         <AlertWrapper>
           <Alert
             title="퇴근 완료"
-            description="9:53 퇴근 완료!"
+            description={`${checkOutTime || ""} 퇴근 완료!`}
             alertType="alert"
             onClose={handleCloseModal}
           />
