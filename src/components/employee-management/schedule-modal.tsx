@@ -6,7 +6,7 @@ interface ScheduleModalProps {
   name: string;
   id: string;
   onClose?: () => void;
-  onConfirm?: () => void;
+  onConfirm?: (selectedDays: string[]) => void;
 }
 
 export function ScheduleModal({
@@ -59,7 +59,7 @@ export function ScheduleModal({
           <CancelButton onClick={onClose}>취소</CancelButton>
           <ConfirmButton
             onClick={() => {
-              if (onConfirm) onConfirm();
+              if (onConfirm) onConfirm?.(selectedDays);
               else if (onClose) onClose();
             }}
           >
