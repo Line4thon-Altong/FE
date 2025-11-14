@@ -65,6 +65,7 @@ export function HomePageOwner() {
         );
       } catch (e: unknown) {
         console.error("대시보드 데이터를 불러오지 못했습니다:", e);
+
         if ((e as any).response?.status === 401) {
           console.warn("401 Unauthorized - 토큰 만료 또는 유효하지 않음");
           navigate("/login");
@@ -75,8 +76,8 @@ export function HomePageOwner() {
 
     fetchDashboardData();
   }, []);
-  const handleEducationClick = (id: number) => {
-    navigate(`/education-details/${id}`);
+  const handleEducationClick = (id: number, title: string) => {
+    navigate(`/education-details/${id}`, { state: { title } });
   };
 
   return (

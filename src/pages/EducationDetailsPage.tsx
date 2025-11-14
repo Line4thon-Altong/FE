@@ -4,7 +4,7 @@ import { useOutletContext, useParams } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { QuizItem } from "@/components/education-details/quiz-item";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 // 매뉴얼
 function ManualContainer({
@@ -43,7 +43,7 @@ function ManualContainer({
       </AttentionSection>
 
       <SummarySection>
-        <SummaryTitle>💪 알통 4컷 요약</SummaryTitle>
+        <SummaryTitle>💪 알통 카드 뉴스</SummaryTitle>
         <SummaryImage src={data.cardnewsImageUrl} alt="education-details" />
       </SummarySection>
     </Container>
@@ -192,6 +192,11 @@ function QuizContainer() {
 export function EducationDetailsPage() {
   const { trainingId } = useParams(); // URL 파라미터 가져오기
   const { activeTab } = useOutletContext<{ activeTab: "manual" | "quiz" }>();
+  const { setOnDelete, setOnEdit, setTitle } = useOutletContext<{
+    setOnDelete?: (fn: () => void) => void;
+    setOnEdit?: (fn: () => void) => void;
+    setTitle?: (title: string) => void;
+  }>();
   const navigate = useNavigate();
 
   const [data, setData] = useState<{
@@ -204,7 +209,7 @@ export function EducationDetailsPage() {
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
+  // 교육 조회 함수
   useEffect(() => {
     const fetchEducationDetails = async () => {
       try {
@@ -236,6 +241,10 @@ export function EducationDetailsPage() {
 
         const apiData = res?.data?.data;
         setData(apiData);
+        // API에서 가져온 title을 헤더에 설정
+        if (apiData?.title && setTitle) {
+          setTitle(apiData.title);
+        }
       } catch (err) {
         console.error("교육 상세 불러오기 실패:", err);
         setError("교육 정보를 불러오는 중 오류가 발생했습니다.");
@@ -246,6 +255,47 @@ export function EducationDetailsPage() {
 
     fetchEducationDetails();
   }, [trainingId]);
+  //교육 삭제 함수
+  const deleteTraining = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const userType = localStorage.getItem("usertype");
+
+      if (!token) {
+        setError("로그인이 필요합니다.");
+        return;
+      }
+
+      await axios.delete(`https://altong.store/api/trainings/${trainingId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // 삭제 성공 시 홈으로 이동
+      if (userType === "owner") {
+        navigate("/home/owner");
+      } else {
+        navigate("/home/employee");
+      }
+    } catch (err) {
+      console.error("교육 삭제 실패:", err);
+      setError("교육 삭제 중 오류가 발생했습니다.");
+    }
+  }, [trainingId, navigate]);
+
+  //교육 수정 함수
+  const editTraining = useCallback(() => {
+    navigate(`/education-details/${trainingId}/edit`);
+  }, [trainingId, navigate]);
+
+  useEffect(() => {
+    // Layout에 콜백 등록
+    if (setOnDelete) {
+      setOnDelete(() => deleteTraining);
+    }
+    if (setOnEdit) {
+      setOnEdit(() => editTraining);
+    }
+  }, [setOnDelete, setOnEdit, deleteTraining, editTraining]);
 
   if (loading) return <div>로딩 중...</div>;
   if (error) return <div>{error}</div>;

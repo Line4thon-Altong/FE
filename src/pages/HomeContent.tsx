@@ -11,7 +11,7 @@ type HomeContentProps = {
   educationItems: { title: string; date: string; id?: number }[];
   onEmployeeManageClick?: () => void;
   onCreateEducationClick?: () => void;
-  onEducationClick?: (id: number) => void;
+  onEducationClick?: (id: number, title: string) => void;
   onCheckIn?: () => void;
   onCheckOut?: () => void;
   isCheckedIn?: boolean;
@@ -109,7 +109,11 @@ export function HomeContent({
               key={index}
               title={item.title}
               date={item.date}
-              onClick={() => onEducationClick && item.id && onEducationClick(item.id)}
+              onClick={() =>
+                onEducationClick &&
+                item.id &&
+                onEducationClick(item.id, item.title)
+              }
             />
           ))}
         </EducationItemContainer>

@@ -21,6 +21,8 @@ import ScheduleLayout from "@/layouts/ScheduleLayout";
 import { SchedulePage } from "@/pages/SchedulePage";
 
 import { EducationDetailsPage } from "@/pages/EducationDetailsPage";
+import ManualEditPage from "@/pages/ManualEditPage";
+
 import { MyPage } from "@/pages/MyPage";
 import { AccountPage } from "@/pages/AccountPage";
 
@@ -153,6 +155,11 @@ export const router = createBrowserRouter([
         handle: {
           title: "주문받고 결제하는 기본 교육",
         },
+      },
+      {
+        path: "edit",
+        element: <ManualEditPage />,
+        handle: { title: "메뉴얼 수정" },
       },
     ],
   },
