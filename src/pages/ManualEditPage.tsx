@@ -14,17 +14,19 @@ interface ManualData {
   goal: string;
   procedure: ProcedureItem[];
   precaution: string[];
+  cardnewsImageUrl?: string;
 }
 
 export default function ManualEditPage() {
   const { trainingId } = useParams();
   const navigate = useNavigate();
 
-  const [manual, setManual] = useState({
+  const [manual, setManual] = useState<ManualData>({
     title: "",
     goal: "",
     procedure: [],
     precaution: [],
+    cardnewsImageUrl: "",
   });
 
   const [loading, setLoading] = useState(true);
@@ -120,7 +122,7 @@ export default function ManualEditPage() {
             />
 
             <ManualSubTitle>세부 내용</ManualSubTitle>
-            {p.details.map((d, dIndex) => (
+            {p.details.map((d: string, dIndex: number) => (
               <EditTextarea
                 key={dIndex}
                 value={d}

@@ -13,12 +13,18 @@ import { createSchedule } from "@/scheduleFunc/useScheduleAPI";
 
 import axios from "axios";
 
+interface Employee {
+  id: number;
+  name: string;
+  username: string;
+}
+
 export function EmployeeManagementPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [employeeList, setEmployeeList] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [employeeList, setEmployeeList] = useState<Employee[]>([]);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
@@ -63,7 +69,7 @@ export function EmployeeManagementPage() {
   };
 
   //삭제버튼 클릭 -> 모달 오픈
-  const handleDeleteEmployee = (employee: any) => {
+  const handleDeleteEmployee = (employee: Employee) => {
     setSelectedEmployee(employee);
     setIsAlertOpen(true);
   };
@@ -86,7 +92,7 @@ export function EmployeeManagementPage() {
       if (response.status === 200 || response.status === 204) {
         // 삭제 성공 시 목록 업데이트
         setEmployeeList((prev) =>
-          prev.filter((emp: any) => emp.id !== selectedEmployee.id)
+          prev.filter((emp) => emp.id !== selectedEmployee.id)
         );
         console.log(`알바생 ${selectedEmployee.name} 삭제 성공`);
       } else {
@@ -107,7 +113,7 @@ export function EmployeeManagementPage() {
   };
 
   // 일정 등록 모드에서 직원 선택 시
-  const handleSelectEmployee = (employee: any) => {
+  const handleSelectEmployee = (employee: Employee) => {
     if (!isSchedule) return;
     setSelectedEmployee(employee);
     setScheduleModalOpen(true);
@@ -115,6 +121,8 @@ export function EmployeeManagementPage() {
 
   // 일정 저장
   const handleConfirmSchedule = async (selectedDays: string[]) => {
+    if (!selectedEmployee) return;
+    
     const workDates = generateScheduleDates(selectedDays);
 
     await createSchedule({
@@ -136,7 +144,7 @@ export function EmployeeManagementPage() {
           onConfirm={handleConfirmSchedule}
         />
       )}
-      {isAlertOpen && (
+      {isAlertOpen && selectedEmployee && (
         <Alert
           title="알바생 삭제"
           description={`'${selectedEmployee.name}' 알바생을 삭제하시겠습니까?`}
@@ -172,7 +180,7 @@ export function EmployeeManagementPage() {
               알바생을 추가해주세요.
             </EmployeeListNoDataText>
           ) : (
-            employeeList.map((employee: any) => (
+            employeeList.map((employee) => (
               <EmployeeItem
                 key={employee.id}
                 name={employee.name}

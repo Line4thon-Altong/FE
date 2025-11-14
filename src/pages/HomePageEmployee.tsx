@@ -72,7 +72,7 @@ export function HomePageEmployee() {
   };
 
   // 공통 axios 요청
-  const requestCheck = async (url) => {
+  const requestCheck = async (url: string) => {
     try {
       const token = localStorage.getItem("accessToken");
       if (!token) {
@@ -91,8 +91,8 @@ export function HomePageEmployee() {
       );
 
       return response.data;
-    } catch (error) {
-      if (error.response?.data) {
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response?.data) {
         // 백엔드에서 보낸 message, code 포함
         return error.response.data;
       } else {
