@@ -71,41 +71,6 @@ export function HomePageEmployee() {
     }
   };
 
-  // 공통 axios 요청
-  const requestCheck = async (url) => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-
-      const response = await axios.patch(
-        url,
-        {}, // ← PATCH는 body 자리에 빈 객체 넣어야 함
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      return response.data;
-    } catch (error) {
-      if (error.response?.data) {
-        // 백엔드에서 보낸 message, code 포함
-        return error.response.data;
-      } else {
-        return { code: "UNKNOWN", message: "출퇴근 요청 실패." };
-      }
-    }
-  };
-
-  function formatTime(timeString: string) {
-    if (!timeString) return null;
-    return timeString.split(".")[0].slice(0, 5);
-  }
-
   // "2025-11-11 05:27" -> "2025.11.11"
   const formatDate = (s: string) => {
     if (!s) return "";
