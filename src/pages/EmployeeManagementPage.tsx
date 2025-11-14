@@ -123,7 +123,7 @@ export function EmployeeManagementPage() {
     });
 
     setScheduleModalOpen(false);
-    alert("스케줄이 등록되었습니다!");
+    navigate("/schedule");
   };
 
   return (

@@ -24,7 +24,7 @@ export function MyPage() {
     setIsProcessing(true);
 
     try {
-      const userType = localStorage.getItem("userType");
+      const userType = localStorage.getItem("usertype");
       const refreshToken = localStorage.getItem("refreshToken");
       const token = localStorage.getItem("accessToken");
 
