@@ -4,7 +4,7 @@ import { useOutletContext, useParams } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { QuizItem } from "@/components/education-details/quiz-item";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 // 매뉴얼
 function ManualContainer({
@@ -256,23 +256,46 @@ export function EducationDetailsPage() {
     fetchEducationDetails();
   }, [trainingId]);
   //교육 삭제 함수
-  const deleteTraining = async () => {
-    const token = localStorage.getItem("accessToken");
-    await axios.delete(`https://altong.store/api/trainings/${trainingId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    navigate("/home/owner");
-  };
+  const deleteTraining = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const userType = localStorage.getItem("usertype");
+
+      if (!token) {
+        setError("로그인이 필요합니다.");
+        return;
+      }
+
+      await axios.delete(`https://altong.store/api/trainings/${trainingId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // 삭제 성공 시 홈으로 이동
+      if (userType === "owner") {
+        navigate("/home/owner");
+      } else {
+        navigate("/home/employee");
+      }
+    } catch (err) {
+      console.error("교육 삭제 실패:", err);
+      setError("교육 삭제 중 오류가 발생했습니다.");
+    }
+  }, [trainingId, navigate]);
+
   //교육 수정 함수
-  const editTraining = () => {
+  const editTraining = useCallback(() => {
     navigate(`/education-details/${trainingId}/edit`);
-  };
+  }, [trainingId, navigate]);
 
   useEffect(() => {
     // Layout에 콜백 등록
-    setOnDelete(() => deleteTraining);
-    setOnEdit(() => editTraining);
-  }, []);
+    if (setOnDelete) {
+      setOnDelete(() => deleteTraining);
+    }
+    if (setOnEdit) {
+      setOnEdit(() => editTraining);
+    }
+  }, [setOnDelete, setOnEdit, deleteTraining, editTraining]);
 
   if (loading) return <div>로딩 중...</div>;
   if (error) return <div>{error}</div>;
