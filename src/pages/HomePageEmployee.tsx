@@ -12,6 +12,15 @@ export function HomePageEmployee() {
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [showCheckInModal, setShowCheckInModal] = useState(false);
   const [showCheckOutModal, setShowCheckOutModal] = useState(false);
+
+  const [checkInTime, setCheckInTime] = useState<string | null>(null);
+  const [checkOutTime, setCheckOutTime] = useState<string | null>(null);
+
+  const [errorTitle, setErrorTitle] = useState("");
+  const [errorDescription, setErrorDescription] = useState("");
+
+  const [isErrorAlertOpen, setIsErrorAlertOpen] = useState(false);
+
   const [educationItems, setEducationItems] = useState<
     { id: number; title: string; date: string }[]
   >([]);
@@ -21,16 +30,81 @@ export function HomePageEmployee() {
     if (showCheckInModal) setShowCheckInModal(false);
     if (showCheckOutModal) setShowCheckOutModal(false);
   };
-  //출근하기 클릭
-  const handleCheckIn = () => {
-    setIsCheckedIn(true);
-    setShowCheckInModal(true);
+  // 출근 버튼 클릭
+  const handleCheckIn = async () => {
+    const data = await requestCheck(
+      "https://altong.store/api/employees/me/schedules/check-in"
+    );
+
+    if (!data) return;
+
+    if (data.code === "SUCCESS") {
+      // 정상 출근 처리
+      setCheckInTime(formatTime(data.data.startTime));
+      setIsCheckedIn(true);
+      setShowCheckInModal(true);
+    } else {
+      // 에러 모달 띄우기
+      setErrorDescription(data.message); // "이미 출근 처리되었습니다."
+      setErrorTitle("출퇴근 실패");
+      setIsErrorAlertOpen(true);
+    }
   };
   ///퇴근하기 클릭
-  const handleCheckOut = () => {
-    setIsCheckedIn(false);
-    setShowCheckOutModal(true);
+  const handleCheckOut = async () => {
+    const data = await requestCheck(
+      "https://altong.store/api/employees/me/schedules/check-out"
+    );
+
+    if (!data) return;
+
+    if (data.code === "SUCCESS") {
+      // 정상 퇴근 처리
+      setCheckOutTime(formatTime(data.data.endTime));
+      setIsCheckedIn(true);
+      setShowCheckOutModal(true);
+    } else {
+      // 에러 모달 띄우기
+      setErrorDescription(data.message); // "이미 퇴근 처리되었습니다."
+      setErrorTitle("출퇴근 실패");
+      setIsErrorAlertOpen(true);
+    }
   };
+
+  // 공통 axios 요청
+  const requestCheck = async (url) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const response = await axios.patch(
+        url,
+        {}, // ← PATCH는 body 자리에 빈 객체 넣어야 함
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      if (error.response?.data) {
+        // 백엔드에서 보낸 message, code 포함
+        return error.response.data;
+      } else {
+        return { code: "UNKNOWN", message: "출퇴근 요청 실패." };
+      }
+    }
+  };
+
+  function formatTime(timeString: string) {
+    if (!timeString) return null;
+    return timeString.split(".")[0].slice(0, 5);
+  }
 
   // "2025-11-11 05:27" -> "2025.11.11"
   const formatDate = (s: string) => {
@@ -93,7 +167,7 @@ export function HomePageEmployee() {
         <AlertWrapper>
           <Alert
             title="출근 완료"
-            description="8:53 출근 완료!"
+            description={`${checkInTime || ""} 출근 완료!`}
             alertType="alert"
             onClose={handleCloseModal}
           />
@@ -103,11 +177,19 @@ export function HomePageEmployee() {
         <AlertWrapper>
           <Alert
             title="퇴근 완료"
-            description="9:53 퇴근 완료!"
+            description={`${checkOutTime || ""} 퇴근 완료!`}
             alertType="alert"
             onClose={handleCloseModal}
           />
         </AlertWrapper>
+      )}
+      {isErrorAlertOpen && (
+        <Alert
+          title={errorTitle}
+          description={errorDescription}
+          alertType="alert"
+          onClose={() => setIsErrorAlertOpen(false)}
+        />
       )}
       <HomeContent
         userType="employee"
