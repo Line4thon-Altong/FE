@@ -68,13 +68,8 @@
 <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"> <img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=white"> <img src="https://img.shields.io/badge/figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white"> <img src="https://img.shields.io/badge/discord-5865F2?style=for-the-badge&logo=discord&logoColor=white"> 
 
 </br>
-</br>
-### 📝 Git 브랜치 전략
-main        # 배포
-dev         # 통합 개발
-feature/*   # 기능 단위
-hotfix/*    # 버그 수정
-</br>
+
+
 ### 🌳 프로젝트 구조
 ```
 src/
