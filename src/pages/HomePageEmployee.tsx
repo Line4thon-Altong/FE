@@ -98,10 +98,8 @@ export function HomePageEmployee() {
     fetchDashboardData();
   }, []);
 
-
-  const handleEducationClick = (id: number) => {
-
-    navigate(`/education-details/${id}`);
+  const handleEducationClick = (id: number, title: string) => {
+    navigate(`/education-details/${id}`, { state: { title } });
   };
 
   return (

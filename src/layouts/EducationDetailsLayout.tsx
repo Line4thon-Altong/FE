@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { useState } from "react";
 import { Header } from "@/components/header";
@@ -6,7 +6,12 @@ import { useMatches } from "react-router-dom";
 
 export default function EducationDetailsLayout() {
   const matches = useMatches();
-  const title = (matches.at(-1)?.handle as { title: string })?.title;
+  const routeTitle = (matches.at(-1)?.handle as { title: string })?.title;
+  const location = useLocation();
+  const stateTitle = (location.state as { title?: string })?.title;
+  
+  // state에서 전달된 title이 있으면 사용, 없으면 routeTitle 사용
+  const title = stateTitle || routeTitle || "교육 상세";
 
   const [activeTab, setActiveTab] = useState<"manual" | "quiz">("manual");
 
