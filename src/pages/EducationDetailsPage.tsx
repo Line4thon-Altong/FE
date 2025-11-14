@@ -192,7 +192,11 @@ function QuizContainer() {
 export function EducationDetailsPage() {
   const { trainingId } = useParams(); // URL 파라미터 가져오기
   const { activeTab } = useOutletContext<{ activeTab: "manual" | "quiz" }>();
-  const { setOnDelete, setOnEdit } = useOutletContext();
+  const { setOnDelete, setOnEdit, setTitle } = useOutletContext<{
+    setOnDelete?: (fn: () => void) => void;
+    setOnEdit?: (fn: () => void) => void;
+    setTitle?: (title: string) => void;
+  }>();
   const navigate = useNavigate();
 
   const [data, setData] = useState<{
@@ -237,6 +241,10 @@ export function EducationDetailsPage() {
 
         const apiData = res?.data?.data;
         setData(apiData);
+        // API에서 가져온 title을 헤더에 설정
+        if (apiData?.title && setTitle) {
+          setTitle(apiData.title);
+        }
       } catch (err) {
         console.error("교육 상세 불러오기 실패:", err);
         setError("교육 정보를 불러오는 중 오류가 발생했습니다.");

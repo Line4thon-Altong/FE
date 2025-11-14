@@ -1,16 +1,28 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/header";
 import { useMatches } from "react-router-dom";
 
 export default function EducationDetailsLayout() {
   const matches = useMatches();
-  const title = (matches.at(-1)?.handle as { title: string })?.title;
-  const [onDelete, setOnDelete] = useState<null | (() => void)>(null);
-  const [onEdit, setOnEdit] = useState<null | (() => void)>(null);
+  const routeTitle = (matches.at(-1)?.handle as { title: string })?.title;
+  const location = useLocation();
+  const stateTitle = (location.state as { title?: string })?.title;
 
   const [activeTab, setActiveTab] = useState<"manual" | "quiz">("manual");
+  const [onDelete, setOnDelete] = useState<(() => void) | undefined>(undefined);
+  const [onEdit, setOnEdit] = useState<(() => void) | undefined>(undefined);
+  const [title, setTitle] = useState<string>(
+    stateTitle || routeTitle || "교육 상세"
+  );
+
+  // location.state의 title이 변경되면 업데이트
+  useEffect(() => {
+    if (stateTitle) {
+      setTitle(stateTitle);
+    }
+  }, [stateTitle]);
 
   return (
     <Viewport>
@@ -26,10 +38,10 @@ export default function EducationDetailsLayout() {
         <AreaContainer>
           {/* 아래에서 Outlet 대신 직접 조건부 렌더링 (또는 manual/quiz Container import해서 사용) */}
           {activeTab === "manual" && (
-            <Outlet context={{ activeTab, setOnDelete, setOnEdit }} />
+            <Outlet context={{ activeTab, setOnDelete, setOnEdit, setTitle }} />
           )}
           {activeTab === "quiz" && (
-            <Outlet context={{ activeTab, setOnDelete, setOnEdit }} />
+            <Outlet context={{ activeTab, setOnDelete, setOnEdit, setTitle }} />
           )}
         </AreaContainer>
       </AppArea>
