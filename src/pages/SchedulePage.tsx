@@ -30,28 +30,21 @@ type ShiftWorker = {
 export function SchedulePage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [workers, setWorkers] = useState<
+    {
+      name: string;
+      id: string;
+      startTime: string | null;
+      endTime: string | null;
+    }[]
+  >([]);
 
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const userType = localStorage.getItem("usertype");
 
   const token = localStorage.getItem("accessToken");
   const storeId = localStorage.getItem("storeId");
-  // 날짜별 근무자 데이터 (예시)
-  // const shifts: Record<string, ShiftWorker[]> = {
-  //   "2025-10-06": [{ name: "민지", color: "#ffd6d6", id: "qwewqe" }],
-  //   "2025-10-08": [
-  //     { name: "다연", color: "#c8e7ff", id: "qwewqe" },
-  //     { name: "수현", color: "#d3f8d3", id: "qwewqe" },
-  //   ],
-  //   "2025-11-14": [{ name: "유나", color: "#ffe6b3", id: "qwewqe" }],
-  //   "2025-11-19": [{ name: "다연", color: "#c8e7ff", id: "qwewqe" }],
-  //   "2025-11-25": [
-  //     { name: "지훈", color: "#ffdee2", id: "qwewqe" },
-  //     { name: "태민", color: "#d0f0c0", id: "qwewqe" },
-  //     { name: "지훈", color: "#ffdee2", id: "qwewqe" },
-  //     { name: "태민", color: "#d0f0c0", id: "qwewqe" },
-  //   ],
-  // };
+
   const [shifts, setShifts] = useState<Record<string, ShiftWorker[]>>({});
   // 색상 자동 배정용 (알바생 인원 많아도 중복 없이 돌림)
   const colorSet = [
@@ -132,13 +125,57 @@ export function SchedulePage() {
     fetchSchedules();
   }, [year, month, token, storeId]);
 
-  ///////////////////////달력 생성 코드///////////////////////////
+  // 클릭 시 api 호출, 모달 열기
+  const handleDayClick = async (dateStr: string) => {
+    if (!storeId || !token) return;
 
-  // 클릭 시 모달 열기
-  const handleDayClick = (dateStr: string) => {
     if (shifts[dateStr]) setSelectedDate(dateStr);
-    console.log("click");
+
+    try {
+      const dateObj = new Date(dateStr);
+
+      const year = dateObj.getFullYear();
+      const month = dateObj.getMonth() + 1;
+
+      const res = await axios.get(
+        `https://altong.store/api/stores/${storeId}/schedules`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            workDate: dateStr,
+            year,
+            month,
+          },
+        }
+      );
+
+      const list = res.data.data.schedules || [];
+      //클릭한 날짜만 필터링
+      const filtered = list.filter((item: any) => item.workDate === dateStr);
+
+      // 모달에서 사용하기 좋게 매핑
+      const formatted = filtered.map((item: any) => ({
+        name: item.employeeName,
+        id: String(item.employeeId),
+        startTime: item.startTime,
+        endTime: item.endTime,
+      }));
+
+      setWorkers(formatted);
+    } catch (err) {
+      console.error("스케쥴 조회 실패", err);
+    }
   };
+
+  const closeModal = () => {
+    console.log("closing modal!!!!");
+    setSelectedDate(null);
+    setWorkers([]);
+  };
+
+  ///////////////////////달력 생성 코드///////////////////////////
 
   // 달 이동 함수
   const handlePrevMonth = () => setCurrentMonth((prev) => subMonths(prev, 1));
@@ -163,8 +200,8 @@ export function SchedulePage() {
       {selectedDate && (
         <ScheduleModal
           date={selectedDate}
-          workers={shifts[selectedDate]}
-          onClose={() => setSelectedDate(null)}
+          workers={workers}
+          onClose={closeModal}
         />
       )}
       {userType == "owner" ? (

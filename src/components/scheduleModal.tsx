@@ -6,9 +6,16 @@ import BackIcon from "@/assets/icons/ic_back";
 import PersonFillIcon from "@/assets/icons/ic_person-fill";
 import { useEffect } from "react";
 
+interface WorkerInfo {
+  name: string;
+  id: string;
+  startTime?: string | null;
+  endTime?: string | null;
+}
+
 interface ScheduleModalProps {
   date: string;
-  workers: { name: string; id: string }[];
+  workers: WorkerInfo[];
   onClose: () => void;
 }
 interface CommuteBoxProps {
@@ -24,11 +31,19 @@ export function ScheduleModal({ date, workers, onClose }: ScheduleModalProps) {
       document.body.style.overflow = originalStyle; // 닫을 때 원복
     };
   }, []);
+  console.log("modal", date, workers, onClose);
   return (
     <ModalOverlay>
-      <ModealBack onClick={onClose}>
+      <ModalBack
+        onClick={(e) => {
+          e.stopPropagation(); // overlay onClick이 먼저 실행되는 것 방지
+          onClose();
+          console.log("click");
+        }}
+      >
         <BackIcon color={theme.colors.white} />
-      </ModealBack>
+      </ModalBack>
+
       <ModalTitleContainer>
         <ModalTitle>
           {format(new Date(date), "M월 d일 EEE", { locale: ko })}
@@ -49,10 +64,13 @@ export function ScheduleModal({ date, workers, onClose }: ScheduleModalProps) {
                 <EmployeeItemId>{worker.id}</EmployeeItemId>
               </WorkInfo>
             </Profile>
+
             <Commute>
               <CommuteInfo>
-                <CommuteBox bgColor={theme.colors.main}>출근: 15:55</CommuteBox>
-                <CommuteBox>퇴근 x</CommuteBox>
+                <CommuteBox bgColor={theme.colors.main}>
+                  출근: {worker.startTime ?? "x"}
+                </CommuteBox>
+                <CommuteBox>퇴근: {worker.endTime ?? "x"}</CommuteBox>
               </CommuteInfo>
             </Commute>
           </WorkerCard>
@@ -64,13 +82,13 @@ export function ScheduleModal({ date, workers, onClose }: ScheduleModalProps) {
 
 const ModalOverlay = styled.div`
   position: fixed;
-  top: 50%;              /* 세로 중앙 */
-  left: 50%;             /* 가로 중앙 */
+  top: 50%; /* 세로 중앙 */
+  left: 50%; /* 가로 중앙 */
   transform: translate(-50%, -50%); /* 완전 정가운데  */
   max-width: 430px;
-        
-  height: 100dvh;        /* 실제 뷰포트 높이만큼 꽉 차게  */
-  
+
+  height: 100dvh; /* 실제 뷰포트 높이만큼 꽉 차게  */
+
   background: rgba(0, 0, 0, 0.7);
   display: flex;
   flex-direction: column;
@@ -79,10 +97,10 @@ const ModalOverlay = styled.div`
   z-index: 2000;
   width: 100%;
 
-  padding: 25px;z
+  padding: 25px;
 `;
 
-const ModealBack = styled.div`
+const ModalBack = styled.div`
   position: absolute;
   width: 100%;
   display: flex;
@@ -90,6 +108,7 @@ const ModealBack = styled.div`
   justify-content: flex-start;
   top: 50px;
   left: 25px;
+  cursor: pointer;
 `;
 
 const ModalTitleContainer = styled.div`

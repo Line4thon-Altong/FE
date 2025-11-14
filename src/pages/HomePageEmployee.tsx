@@ -59,8 +59,12 @@ export function HomePageEmployee() {
 
       const response = await axios.patch(
         url,
-
-        { headers: { Authorization: `Bearer ${token}` } }
+        {}, // ← PATCH는 body 자리에 빈 객체 넣어야 함
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       return response.data;
