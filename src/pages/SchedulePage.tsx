@@ -127,31 +127,36 @@ export function SchedulePage() {
 
   // 클릭 시 api 호출, 모달 열기
   const handleDayClick = async (dateStr: string) => {
-    if (!storeId || !token) return;
+    if (!token) return;
 
     if (shifts[dateStr]) setSelectedDate(dateStr);
 
     try {
       const dateObj = new Date(dateStr);
-
       const year = dateObj.getFullYear();
       const month = dateObj.getMonth() + 1;
 
-      const res = await axios.get(
-        `https://altong.store/api/stores/${storeId}/schedules`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params: {
-            workDate: dateStr,
-            year,
-            month,
-          },
-        }
-      );
+      let URL = "";
 
-      const list = res.data.data.schedules || [];
+      if (userType === "owner") {
+        URL = `https://altong.store/api/stores/${storeId}/schedules`;
+      } else {
+        URL = `https://altong.store/api/employees/me/schedules`;
+      }
+
+      const res = await axios.get(URL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          workDate: dateStr,
+          year,
+          month,
+        },
+      });
+
+      const list = res.data.data?.schedules || [];
+
       //클릭한 날짜만 필터링
       const filtered = list.filter((item: any) => item.workDate === dateStr);
 
@@ -159,14 +164,19 @@ export function SchedulePage() {
       const formatted = filtered.map((item: any) => ({
         name: item.employeeName,
         id: String(item.employeeId),
-        startTime: item.startTime,
-        endTime: item.endTime,
+        startTime: formatTime(item.startTime),
+        endTime: formatTime(item.endTime),
       }));
 
       setWorkers(formatted);
     } catch (err) {
       console.error("스케쥴 조회 실패", err);
     }
+  };
+  //출퇴근 시간 시:분 으로 자르기
+  const formatTime = (timeString: string) => {
+    // "18:04:46.206880097" → ["18:04"]
+    return timeString.split(".")[0].slice(0, 5);
   };
 
   const closeModal = () => {

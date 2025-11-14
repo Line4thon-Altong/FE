@@ -15,8 +15,13 @@ export function HomePageEmployee() {
   const [showCheckInModal, setShowCheckInModal] = useState(false);
   const [showCheckOutModal, setShowCheckOutModal] = useState(false);
 
-  const [checkInTime, setCheckInTime] = useState(null);
-  const [checkOutTime, setCheckOutTime] = useState(null);
+  const [checkInTime, setCheckInTime] = useState<string | null>(null);
+  const [checkOutTime, setCheckOutTime] = useState<string | null>(null);
+
+  const [errorTitle, setErrorTitle] = useState("");
+  const [errorDescription, setErrorDescription] = useState("");
+
+  const [isErrorAlertOpen, setIsErrorAlertOpen] = useState(false);
 
   // 모달 닫기
   const handleCloseModal = () => {
@@ -30,10 +35,18 @@ export function HomePageEmployee() {
     );
 
     if (!data) return;
-    if (data.startTime) setCheckInTime(data.startTime);
 
-    setIsCheckedIn(true); // UI 상태 변경
-    setShowCheckInModal(true); // 출근 완료 모달 오픈
+    if (data.code === "SUCCESS") {
+      // 정상 출근 처리
+      setCheckInTime(formatTime(data.data.startTime));
+      setIsCheckedIn(true);
+      setShowCheckInModal(true);
+    } else {
+      // 에러 모달 띄우기
+      setErrorDescription(data.message); // "이미 출근 처리되었습니다."
+      setErrorTitle("출퇴근 실패");
+      setIsErrorAlertOpen(true);
+    }
   };
   ///퇴근하기 클릭
   const handleCheckOut = async () => {
@@ -42,10 +55,18 @@ export function HomePageEmployee() {
     );
 
     if (!data) return;
-    if (data.endTime) setCheckOutTime(data.endTime);
 
-    setIsCheckedIn(false);
-    setShowCheckOutModal(true);
+    if (data.code === "SUCCESS") {
+      // 정상 퇴근 처리
+      setCheckOutTime(formatTime(data.data.endTime));
+      setIsCheckedIn(true);
+      setShowCheckOutModal(true);
+    } else {
+      // 에러 모달 띄우기
+      setErrorDescription(data.message); // "이미 퇴근 처리되었습니다."
+      setErrorTitle("출퇴근 실패");
+      setIsErrorAlertOpen(true);
+    }
   };
 
   // 공통 axios 요청
@@ -68,10 +89,20 @@ export function HomePageEmployee() {
       );
 
       return response.data;
-    } catch (err) {
-      console.error("출퇴근 요청 실패:", err);
+    } catch (error) {
+      if (error.response?.data) {
+        // 백엔드에서 보낸 message, code 포함
+        return error.response.data;
+      } else {
+        return { code: "UNKNOWN", message: "출퇴근 요청 실패." };
+      }
     }
   };
+
+  function formatTime(timeString: string) {
+    // "18:04:46.206880097" → ["18:04:46", "206880097"]
+    return timeString.split(".")[0];
+  }
 
   const formatDate = (s) => {
     if (!s) return "";
@@ -151,6 +182,14 @@ export function HomePageEmployee() {
             onClose={handleCloseModal}
           />
         </AlertWrapper>
+      )}
+      {isErrorAlertOpen && (
+        <Alert
+          title={errorTitle}
+          description={errorDescription}
+          alertType="alert"
+          onClose={() => setIsErrorAlertOpen(false)}
+        />
       )}
       <HomeContent
         userType="employee"
