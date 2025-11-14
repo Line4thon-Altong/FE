@@ -1,13 +1,19 @@
-// src/pages/HomePageEmployee.jsx
+
 import axios from "axios";
+
 import { useState, useEffect } from "react";
 import { HomeContent } from "./HomeContent";
 import { Alert } from "@/components/alert";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+
+
+
 import { useNavigate } from "react-router-dom";
 
 export function HomePageEmployee() {
   const navigate = useNavigate();
+
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [showCheckInModal, setShowCheckInModal] = useState(false);
   const [showCheckOutModal, setShowCheckOutModal] = useState(false);
@@ -31,8 +37,10 @@ export function HomePageEmployee() {
     setShowCheckOutModal(true);
   };
 
+=
   // "2025-11-11 05:27" -> "2025.11.11"
   const formatDate = (s: string) => {
+
     if (!s) return "";
     const d = new Date(s.replace(" ", "T"));
     if (Number.isNaN(d.getTime())) return s; // 파싱 실패 시 원문 유지
@@ -42,12 +50,14 @@ export function HomePageEmployee() {
     return `${y}.${m}.${day}`;
   };
 
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         const token = localStorage.getItem("accessToken");
         if (!token) {
           console.warn("로그인이 필요합니다.");
+
           return;
         }
 
@@ -61,19 +71,27 @@ export function HomePageEmployee() {
           }
         );
 
+
+       
+
         // 응답: { code, message, data: { trainings } }
+
         const apiData = res?.data?.data;
         const ts = Array.isArray(apiData?.trainings) ? apiData.trainings : [];
 
         setEducationItems(
+
           ts.map((t: { id: number; title: string; createdAt: string }) => ({
+
             id: t.id,
             title: t.title,
             date: formatDate(t.createdAt),
           }))
         );
+
       } catch (e: unknown) {
         console.error("대시보드 데이터를 불러오지 못했습니다:", e);
+
       }
     };
 

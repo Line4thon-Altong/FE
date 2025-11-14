@@ -10,7 +10,9 @@ export function HomePageOwner() {
   const handleEmployeeManage = () => navigate("/employee-management");
   const handleCreateEducation = () => navigate("/education-management");
   const [employeeCount, setEmployeeCount] = useState(0);
-  const [educationItems, setEducationItems] = useState<{ id: number; title: string; date: string }[]>([]);
+  const [educationItems, setEducationItems] = useState<
+    { id: number; title: string; date: string }[]
+  >([]);
 
   // const educationItems = [
   //   { title: "교육 1", date: "2025.01.01" },
