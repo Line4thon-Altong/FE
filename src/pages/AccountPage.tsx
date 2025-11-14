@@ -150,6 +150,8 @@ export function AccountPage() {
       );
 
       if (response.status === 200 || response.status === 204) {
+        // localStorage에 storeName 업데이트
+        localStorage.setItem("storeName", storeName);
         setAlertTitle("변경 완료");
         setAlertDescription("상호명 변경이 완료되었습니다.");
         setIsAlertOpen(true);
