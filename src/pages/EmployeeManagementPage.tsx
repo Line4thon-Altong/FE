@@ -136,10 +136,10 @@ export function EmployeeManagementPage() {
 
   return (
     <Container>
-      {scheduleModalOpen && (
+      {scheduleModalOpen && selectedEmployee && (
         <ScheduleModal
-          name={selectedEmployee?.name}
-          id={selectedEmployee?.username}
+          name={selectedEmployee.name}
+          id={selectedEmployee.username}
           onClose={() => setScheduleModalOpen(false)}
           onConfirm={handleConfirmSchedule}
         />
