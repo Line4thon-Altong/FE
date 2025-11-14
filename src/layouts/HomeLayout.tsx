@@ -10,12 +10,9 @@ export default function HomeLayout() {
   const location = useLocation();
   const routeTitle = (matches.at(-1)?.handle as { title: string })?.title;
 
-  // usertype이 owner이고 storeName이 있으면 storeName을 사용, 없으면 routeTitle 사용
-  const storeName = localStorage.getItem("storeName");
-  const title =
-    localStorage.getItem("usertype") === "owner" && storeName
-      ? storeName
-      : routeTitle;
+  // displayName이 있으면 사용, 없으면 routeTitle 사용
+  const displayName = localStorage.getItem("displayName");
+  const title = displayName ? displayName : routeTitle;
 
   // 현재 pathname을 기준으로 activeItem 결정
   const getActiveItem = () => {

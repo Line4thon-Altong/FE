@@ -46,44 +46,37 @@ export function MyPage() {
     setIsProcessing(true);
 
     try {
-      const userType = localStorage.getItem("userType");
-      const refreshToken = localStorage.getItem("refreshToken");
+      const usertype = localStorage.getItem("usertype");
+      const accessToken = localStorage.getItem("accessToken");
 
-      if (!refreshToken) {
-        console.error("No refresh token found.");
-        return;
+      // owner일 때만 /api/owners/logout으로 POST 요청
+      if (usertype === "owner" && accessToken) {
+        try {
+          await axios.post(
+            "https://altong.store/api/owners/logout",
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+        } catch (error) {
+          console.error("Logout API error:", error);
+          // API 에러가 있어도 로그아웃은 진행
+        }
       }
 
-      // API endpoint 사장/직원 분기
-      const endpoint =
-        userType === "owner"
-          ? "https://altong.store/api/owners/logout"
-          : "https://altong.store/api/employees/logout";
+      // 로컬스토리지 전체 비우기
+      localStorage.clear();
 
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({ refreshToken }),
-      });
-
-      if (response.ok) {
-        //  로컬스토리지 비우기
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("usertype");
-        localStorage.removeItem("userId");
-        localStorage.removeItem("userName");
-        localStorage.removeItem("storeName");
-
-        navigate("/login");
-      } else {
-        console.error("Logout failed:", await response.text());
-      }
+      navigate("/login");
     } catch (err) {
       console.error("Logout error:", err);
+      // 에러가 있어도 로컬스토리지 비우고 로그인 페이지로 이동
+      localStorage.clear();
+      navigate("/login");
     } finally {
       setIsProcessing(false);
       setIsAlertOpen(false);
@@ -108,7 +101,9 @@ export function MyPage() {
             <StoreIcon width={45} height={45} />
           </IconContainer>
           <InfoTextContainer>
-            <Title>{userInfo?.storeName}</Title>
+            <Title>
+              {localStorage.getItem("displayName") || userInfo?.storeName}
+            </Title>
             <Id>{userInfo?.username}</Id>
           </InfoTextContainer>
         </InfoContainer>

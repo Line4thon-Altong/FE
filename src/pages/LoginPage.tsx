@@ -36,16 +36,17 @@ export function LoginPage() {
       const response = await axios.post(url, payload);
 
       if (response.status === 200 && response.data) {
-        console.log(response);
-        const { accessToken, refreshToken } = response.data.data;
-        console.log("accessToken :", accessToken);
-        console.log("refreshToken : ", refreshToken);
+        const { accessToken, refreshToken, username, storeName, displayName } =
+          response.data.data;
+        console.log("login response :", response.data.data);
 
         // localStorage에 토큰 및 유저타입 저장
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
         localStorage.setItem("usertype", loginType);
-        localStorage.setItem("storeName", response.data.data.storeName);
+        localStorage.setItem("username", username);
+        localStorage.setItem("storeName", storeName);
+        localStorage.setItem("displayName", displayName);
 
         // 홈으로 바로 이동
         if (loginType === "owner") navigate("/home/owner");
