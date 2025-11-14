@@ -43,7 +43,7 @@ function ManualContainer({
       </AttentionSection>
 
       <SummarySection>
-        <SummaryTitle>💪 알통 4컷 요약</SummaryTitle>
+        <SummaryTitle>💪 알통 카드 뉴스</SummaryTitle>
         <SummaryImage src={data.cardnewsImageUrl} alt="education-details" />
       </SummarySection>
     </Container>

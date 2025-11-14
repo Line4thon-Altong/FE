@@ -147,7 +147,7 @@ export default function ManualEditPage() {
 
       {/* 요약 이미지 */}
       <SummarySection>
-        <SummaryTitle>💪 알통 4컷 요약</SummaryTitle>
+        <SummaryTitle>💪 알통 카드 뉴스</SummaryTitle>
         <SummaryImage src={manual.cardnewsImageUrl} alt="summary" />
       </SummarySection>
 
