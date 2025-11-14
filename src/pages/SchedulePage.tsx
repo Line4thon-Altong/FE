@@ -176,6 +176,7 @@ export function SchedulePage() {
   //출퇴근 시간 시:분 으로 자르기
   const formatTime = (timeString: string) => {
     // "18:04:46.206880097" → ["18:04"]
+    if (!timeString) return null;
     return timeString.split(".")[0].slice(0, 5);
   };
 

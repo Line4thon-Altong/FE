@@ -100,8 +100,8 @@ export function HomePageEmployee() {
   };
 
   function formatTime(timeString: string) {
-    // "18:04:46.206880097" → ["18:04:46", "206880097"]
-    return timeString.split(".")[0];
+    if (!timeString) return null;
+    return timeString.split(".")[0].slice(0, 5);
   }
 
   const formatDate = (s) => {
