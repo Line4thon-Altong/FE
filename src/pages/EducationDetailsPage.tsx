@@ -253,7 +253,7 @@ export function EducationDetailsPage() {
     await axios.delete(`https://altong.store/api/trainings/${trainingId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    navigate("/education");
+    navigate("/home/owner");
   };
   //교육 수정 함수
   const editTraining = () => {
