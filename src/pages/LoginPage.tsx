@@ -38,15 +38,19 @@ export function LoginPage() {
       if (response.status === 200 && response.data) {
         const data = response.data.data;
 
+        console.log("login response :", response.data.data);
+
         // localStorage에 토큰 및 유저타입 저장
         localStorage.setItem("accessToken", data.accessToken);
         localStorage.setItem("refreshToken", data.refreshToken);
         localStorage.setItem("usertype", loginType);
+
         localStorage.setItem("username", data.username);
         localStorage.setItem("storeName", data.storeName);
-        //localStorage.setItem("displayName", data.displayName);
         localStorage.setItem("id", id);
         localStorage.setItem("storeId", data.storeId);
+        localStorage.setItem("displayName", data.displayName);
+
         // 홈으로 바로 이동
         if (loginType === "owner") navigate("/home/owner");
         else navigate("/home/employee");

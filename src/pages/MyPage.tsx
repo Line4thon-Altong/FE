@@ -4,12 +4,17 @@ import StoreIcon from "@/assets/icons/ic_store";
 import ArrowRightIcon from "@/assets/icons/ic_arrow-right";
 import { Alert } from "@/components/alert";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export function MyPage() {
   const navigate = useNavigate();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [userInfo, setUserInfo] = useState<{
+    storeName?: string;
+    username?: string;
+  } | null>(null);
   const handleAccountClick = () => {
     navigate("/mypage/account");
   };
@@ -18,50 +23,60 @@ export function MyPage() {
     setIsAlertOpen(true);
   };
 
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get("https://altong.store/api/auth/me", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
+        setUserInfo(response.data.data);
+        console.log(response.data.data);
+      } catch (error) {
+        console.error("User info fetch failed:", error);
+      }
+    };
+    fetchUserInfo();
+  }, []);
+
   // 로그아웃 실행 함수
   const handleConfirmLogout = async () => {
     if (isProcessing) return;
     setIsProcessing(true);
 
     try {
-      const userType = localStorage.getItem("usertype");
-      const refreshToken = localStorage.getItem("refreshToken");
-      const token = localStorage.getItem("accessToken");
+      const usertype = localStorage.getItem("usertype");
+      const accessToken = localStorage.getItem("accessToken");
 
-      if (!refreshToken) {
-        console.error("No refresh token found.");
-        return;
+      // owner일 때만 /api/owners/logout으로 POST 요청
+      if (usertype === "owner" && accessToken) {
+        try {
+          await axios.post(
+            "https://altong.store/api/owners/logout",
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+        } catch (error) {
+          console.error("Logout API error:", error);
+          // API 에러가 있어도 로그아웃은 진행
+        }
       }
 
-      // API endpoint 사장/직원 분기
-      const endpoint =
-        userType === "owner"
-          ? "https://altong.store/api/owners/logout"
-          : "https://altong.store/api/employees/logout";
+      // 로컬스토리지 전체 비우기
+      localStorage.clear();
 
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ refreshToken }),
-      });
-
-      if (response.ok) {
-        //  로컬스토리지 비우기
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("userType");
-        localStorage.removeItem("userId");
-        localStorage.removeItem("userName");
-
-        navigate("/login");
-      } else {
-        console.error("Logout failed:", await response.text());
-      }
+      navigate("/login");
     } catch (err) {
       console.error("Logout error:", err);
+      // 에러가 있어도 로컬스토리지 비우고 로그인 페이지로 이동
+      localStorage.clear();
+      navigate("/login");
     } finally {
       setIsProcessing(false);
       setIsAlertOpen(false);
@@ -86,8 +101,10 @@ export function MyPage() {
             <StoreIcon width={45} height={45} />
           </IconContainer>
           <InfoTextContainer>
-            <Title>멋쟁이알통</Title>
-            <Id>altong1234</Id>
+            <Title>
+              {localStorage.getItem("displayName") || userInfo?.storeName}
+            </Title>
+            <Id>{userInfo?.username}</Id>
           </InfoTextContainer>
         </InfoContainer>
         {/* 리스트 */}
